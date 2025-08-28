@@ -1,7 +1,12 @@
 import React, { useMemo, useCallback } from 'react';
 import { Renderer, THREE } from 'expo-three';
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
-import { Dimensions } from 'react-native';
+import { Dimensions, ScaledSize } from 'react-native';
+
+interface WindowScreenDimensions {
+    window: ScaledSize;
+    screen: ScaledSize;
+}
 
 const dummy = new THREE.Object3D();
 
@@ -146,8 +151,8 @@ export default function LibraryScreen() {
             //renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
         };
 
-        const dimensionsResizeListener = ({ window })=>{
-            handleResize(window.width, window.height);
+        const dimensionsResizeListener = (dimensions: WindowScreenDimensions)=>{
+            handleResize(dimensions.window.width, dimensions.window.height);
         };
         const browserHandleResize = ()=>{
             handleResize(window.innerWidth, window.innerHeight);
