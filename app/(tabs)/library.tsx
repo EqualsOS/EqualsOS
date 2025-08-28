@@ -1,7 +1,10 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Renderer, THREE } from 'expo-three';
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
-import { Dimensions, ScaledSize } from 'react-native';
+import { Dimensions, ScaledSize, Platform, Text, View } from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
+// 1. Import the useSafeAreaInsets hook
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface WindowScreenDimensions {
     window: ScaledSize;
@@ -11,6 +14,25 @@ interface WindowScreenDimensions {
 const dummy = new THREE.Object3D();
 
 export default function LibraryScreen() {
+    const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
+    // 2. Get the device's safe area insets
+    const insets = useSafeAreaInsets();
+
+    useEffect(() => {
+        async function allowScreenRotation() {
+            if (Platform.OS !== 'web') {
+                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+            }
+        }
+        allowScreenRotation();
+
+        return () => {
+            if (Platform.OS !== 'web') {
+                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+            }
+        };
+    }, []);
+
     const bookCover = useMemo(() => {
         const bookCoverMaterial = new THREE.MeshStandardMaterial({
             color: 0x808080,
@@ -124,8 +146,8 @@ export default function LibraryScreen() {
 
             bookCover.rotation.y = Math.sin(time) * 4;
 
-            // 2025-08-29 Figure out when to call this so it isn't constantly getting set within animate.
             renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+            setCanvasDimensions({ width: gl.drawingBufferWidth, height: gl.drawingBufferHeight });
 
             renderer.render(scene, camera);
             gl.endFrameEXP();
@@ -135,20 +157,8 @@ export default function LibraryScreen() {
         requestAnimationFrame(animate);
 
         const handleResize = (width: number, height: number) => {
-            /*if (typeof(prms.window) === 'undefined') {
-                const windowDimensions = Dimensions.get('window');
-                console.log(`windowDimensions.width: ${windowDimensions.width}, windowDimensions.height: ${windowDimensions.height}`);
-                console.log(`window.innerWidth: ${window.innerWidth}, window.innerHeight: ${window.innerHeight}`);
-                console.log(`drawingBufferWidth: ${gl.drawingBufferWidth}, drawingBufferHeight: ${gl.drawingBufferHeight}`);
-                return;
-            }*/
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
-
-            // 2025-08-29 Need to figure out when to call renderer.setSize() since
-            // gl.drawingBufferWidth and gl.drawingBufferHeight are not correct when
-            // the browser is maximised or the developer console is opened/closed.
-            //renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
         };
 
         const dimensionsResizeListener = (dimensions: WindowScreenDimensions)=>{
@@ -181,9 +191,21 @@ export default function LibraryScreen() {
     }, [bookCover]);
 
     return (
-        <GLView
-            style={{ flex: 1 }}
-            onContextCreate={handleContextCreate}
-        />
+        <View style={{ flex: 1 }}>
+            {/* 3. Apply the top inset to the text's style */}
+            <Text style={{
+                position: 'absolute',
+                top: insets.top, // Use the top inset
+                left: insets.left + 10, // Use the left inset and add some padding
+                color: 'white',
+                zIndex: 1 // Ensure text is on top of the GLView
+            }}>
+                Canvas: {canvasDimensions.width} x {canvasDimensions.height}
+            </Text>
+            <GLView
+                style={{ flex: 1 }}
+                onContextCreate={handleContextCreate}
+            />
+        </View>
     );
 }
