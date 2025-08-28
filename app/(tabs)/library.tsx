@@ -145,13 +145,17 @@ export default function LibraryScreen() {
             renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
         };
 
-        let time = 0;
+        let startTime: number | null = null; // Store the start time
 
-        const animate = () => {
-            handleResize();
-            time += 0.01;
-            bookCover.rotation.y = Math.sin(time) * 4; // Adjust for sway.
+        const animate = (timestamp: number) => {
+            if (!startTime) {
+                startTime = timestamp; // Record the start time on the first frame
+            }
+            const time = (timestamp - startTime) / 1000; // Convert milliseconds to seconds
+
+            bookCover.rotation.y = Math.sin(time) * 4;
             renderer.render(scene, camera);
+            gl.endFrameEXP();
 
             requestAnimationFrame(animate);
         };
