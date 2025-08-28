@@ -12,7 +12,6 @@ interface WindowScreenDimensions {
 }
 
 export default function LibraryScreen() {
-    const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
     const [dimensionsText, setDimensionsText] = useState('');
     const insets = useSafeAreaInsets();
 
@@ -62,11 +61,11 @@ export default function LibraryScreen() {
 
             bookCover.rotation.y = Math.sin(time) * 4;
 
+            // Keep this line as is
             renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-            setCanvasDimensions({ width: gl.drawingBufferWidth, height: gl.drawingBufferHeight });
 
             setDimensionsText(
-                `Canvas: ${canvasDimensions.width} x ${canvasDimensions.height}\n` +
+                `Canvas: ${gl.drawingBufferWidth} x ${gl.drawingBufferHeight}\n` +
                 `Window: ${Dimensions.get('window').width} x ${Dimensions.get('window').height}\n` +
                 `Screen: ${Dimensions.get('screen').width} x ${Dimensions.get('screen').height}`
             );
@@ -110,7 +109,7 @@ export default function LibraryScreen() {
             }
         };
 
-    }, [bookCover, canvasDimensions.width, canvasDimensions.height]);
+    }, [bookCover]);
 
     return (
         <View style={{ flex: 1 }}>
