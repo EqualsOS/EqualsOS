@@ -5,6 +5,7 @@ import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent } from 're
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
+import { createBookCover } from "@/components/3d/LibraryBook";
 
 export default function RenderScene() {
     // We still use this for the pixel density `scale`.
@@ -50,7 +51,7 @@ export default function RenderScene() {
             // Update renderer and aspect ratio
             renderer.setSize(newWidth, newHeight);
             camera.aspect = newWidth / newHeight;
-            camera.position.set(5, 5, 5);
+            camera.position.set(0, 0, 500);
             camera.lookAt(0, 0, 0);
 
             // Apply all changes
@@ -75,6 +76,9 @@ export default function RenderScene() {
         const axes = createAxisLines();
         scene.add(axes);
 
+        const book = createBookCover();
+        scene.add(book);
+
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(0, 0, 100);
         scene.add(light);
@@ -83,6 +87,16 @@ export default function RenderScene() {
         scene.add(ambientLight);
 
         const animate = () => {
+            const time = Date.now() * 0.0005;
+
+            if (book) {
+                book.rotation.x = time;
+                book.rotation.y = time;
+            }
+
+            axes.rotation.x = time;
+            axes.rotation.y = time;
+
             sceneRenderer.render(scene, sceneCamera);
             gl.endFrameEXP();
             requestAnimationFrame(animate);
