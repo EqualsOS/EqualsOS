@@ -37,9 +37,9 @@ export default function TabLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="library"
+                    name="scene"
                     options={{
-                        title: 'Library',
+                        title: 'Scene',
                         tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
                     }}
                 />
