@@ -1,26 +1,45 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Renderer, THREE } from 'expo-three';
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
-import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent } from 'react-native';
+import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent, PanResponder } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
 import { createBookCover } from "@/components/3d/LibraryBook";
 
 export default function RenderScene() {
-    // We still use this for the pixel density `scale`.
+    // --- Existing Hooks and State ---
     const { scale } = useWindowDimensions();
     const insets = useSafeAreaInsets();
-
-    // State to hold the renderer and camera.
     const [renderer, setRenderer] = useState<Renderer | null>(null);
     const [camera, setCamera] = useState<THREE.PerspectiveCamera | null>(null);
-
-    // ✅ **FIX 1: State to hold the ACTUAL canvas size.**
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
+    // --- 1. Refs for Touch Rotation ---
+    // We use refs to store the rotation angle. This is more performant than state
+    // because it doesn't cause the component to re-render on every touch movement.
+    const cameraAngle = useRef(0);
+    const startAngle = useRef(0);
+
+    // --- 2. PanResponder for Touch Input ---
+    // This hook handles the drag gestures.
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true, // Activate responder on touch
+            onPanResponderGrant: () => {
+                // When a touch starts, store the current angle.
+                startAngle.current = cameraAngle.current;
+            },
+            onPanResponderMove: (evt, gestureState) => {
+                // As the finger moves, update the angle based on the horizontal drag (dx).
+                // We subtract dx to make the rotation feel natural (drag right -> rotate right).
+                const sensitivity = 0.01;
+                cameraAngle.current = startAngle.current + gestureState.dx * sensitivity;
+            },
+        })
+    ).current;
+
     const dimensionsText = useMemo(() => {
-        // We now display the size from our state for accuracy.
         const canvasWidth = (canvasSize.width * scale).toFixed(0);
         const canvasHeight = (canvasSize.height * scale).toFixed(0);
         return `Canvas: ${canvasWidth} x ${canvasHeight}`;
@@ -33,7 +52,6 @@ export default function RenderScene() {
             }
         }
         allowScreenRotation();
-
         return () => {
             if (Platform.OS !== 'web') {
                 ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
@@ -41,20 +59,14 @@ export default function RenderScene() {
         };
     }, []);
 
-    // ✅ **FIX 2: This useEffect now uses the correct canvasSize.**
     useEffect(() => {
         if (renderer && camera && canvasSize.width > 0 && canvasSize.height > 0) {
-            // These are now the accurate pixel dimensions of the GLView.
             const newWidth = canvasSize.width * scale;
             const newHeight = canvasSize.height * scale;
-
-            // Update renderer and aspect ratio
             renderer.setSize(newWidth, newHeight);
             camera.aspect = newWidth / newHeight;
             camera.position.set(0, 0, 500);
             camera.lookAt(0, 0, 0);
-
-            // Apply all changes
             camera.updateProjectionMatrix();
         }
     }, [canvasSize, scale, renderer, camera]);
@@ -62,37 +74,28 @@ export default function RenderScene() {
     const handleContextCreate = useCallback((gl: ExpoWebGLRenderingContext) => {
         const sceneRenderer = new Renderer({ gl });
         setRenderer(sceneRenderer);
-
-        const sceneCamera = new THREE.PerspectiveCamera(
-            75,
-            gl.drawingBufferWidth / gl.drawingBufferHeight,
-            0.1,
-            10000
-        );
+        const sceneCamera = new THREE.PerspectiveCamera(75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 10000);
         setCamera(sceneCamera);
-
         const scene = new THREE.Scene();
-
         const axes = createAxisLines();
         scene.add(axes);
-
         const book = createBookCover();
         scene.add(book);
-
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(0, 0, 100);
         scene.add(light);
-
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        const animate = (timestamp: number) => {
-            const time = timestamp * 0.0006; // Adjust speed here
-            const angle = Math.sin(time) * 6;
+        // --- 3. Updated Animation Loop ---
+        // The animation loop now reads the angle from the ref on every frame
+        // to position the camera, instead of running its own automatic animation.
+        const animate = () => {
+            const currentAngle = cameraAngle.current;
 
-            sceneCamera.position.x = Math.cos(angle) * 500; // Adjust radius here
-            sceneCamera.position.z = Math.sin(angle) * 500; // Adjust radius here
-            sceneCamera.lookAt(0, 0, 0); // Keep camera pointed at the center
+            sceneCamera.position.x = Math.cos(currentAngle) * 500;
+            sceneCamera.position.z = Math.sin(currentAngle) * 500;
+            sceneCamera.lookAt(0, 0, 0);
 
             sceneRenderer.render(scene, sceneCamera);
             gl.endFrameEXP();
@@ -101,15 +104,15 @@ export default function RenderScene() {
         requestAnimationFrame(animate);
     }, []);
 
-    // ✅ **FIX 3: The onLayout prop measures the View.**
     const onLayout = (event: LayoutChangeEvent) => {
         const { width, height } = event.nativeEvent.layout;
-        // Update our state with the true dimensions.
         setCanvasSize({ width, height });
     };
 
+    // --- 4. Apply Pan Handlers to the View ---
+    // The pan handlers are spread onto the main View, making the whole area draggable.
     return (
-        <View style={{ flex: 1 }} onLayout={onLayout}>
+        <View style={{ flex: 1 }} onLayout={onLayout} {...panResponder.panHandlers}>
             <Text style={{
                 position: 'absolute',
                 top: insets.top,
@@ -129,3 +132,4 @@ export default function RenderScene() {
         </View>
     );
 }
+
