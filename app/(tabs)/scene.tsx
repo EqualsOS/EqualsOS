@@ -86,22 +86,19 @@ export default function RenderScene() {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        const animate = () => {
-            const time = Date.now() * 0.0005;
+        const animate = (timestamp: number) => {
+            const time = timestamp * 0.0006; // Adjust speed here
+            const angle = Math.sin(time) * 6;
 
-            if (book) {
-                book.rotation.x = time;
-                book.rotation.y = time;
-            }
-
-            axes.rotation.x = time;
-            axes.rotation.y = time;
+            sceneCamera.position.x = Math.cos(angle) * 500; // Adjust radius here
+            sceneCamera.position.z = Math.sin(angle) * 500; // Adjust radius here
+            sceneCamera.lookAt(0, 0, 0); // Keep camera pointed at the center
 
             sceneRenderer.render(scene, sceneCamera);
             gl.endFrameEXP();
             requestAnimationFrame(animate);
         };
-        animate();
+        requestAnimationFrame(animate);
     }, []);
 
     // ✅ **FIX 3: The onLayout prop measures the View.**
