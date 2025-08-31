@@ -5,7 +5,7 @@ import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent, PanRespon
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
-import { createBookCover } from "@/components/3d/LibraryBook";
+import createPallet from "@/components/3d/LoscamPallet";
 
 export default function RenderScene() {
     // --- Existing Hooks and State ---
@@ -15,26 +15,59 @@ export default function RenderScene() {
     const [camera, setCamera] = useState<THREE.PerspectiveCamera | null>(null);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
-    // --- 1. Refs for Touch Rotation ---
-    // We use refs to store the rotation angle. This is more performant than state
-    // because it doesn't cause the component to re-render on every touch movement.
+    // --- 1. Refs for Touch Interaction ---
+    // Refs store rotation and zoom values without causing re-renders.
     const cameraAngle = useRef(0);
     const startAngle = useRef(0);
+    // --- NEW: Refs for Pinch-to-Zoom ---
+    const cameraDistance = useRef(500); // Initial distance of the camera from the center.
+    const startCameraDistance = useRef(0);
+    const startPinchDistance = useRef(0);
 
-    // --- 2. PanResponder for Touch Input ---
-    // This hook handles the drag gestures.
+    // --- 2. PanResponder for Touch Input (Rotation and Zoom) ---
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => true, // Activate responder on touch
+            onStartShouldSetPanResponder: () => true,
             onPanResponderGrant: () => {
-                // When a touch starts, store the current angle.
+                // Store the starting angle and distance when a touch begins.
                 startAngle.current = cameraAngle.current;
+                startCameraDistance.current = cameraDistance.current;
             },
             onPanResponderMove: (evt, gestureState) => {
-                // As the finger moves, update the angle based on the horizontal drag (dx).
-                // We subtract dx to make the rotation feel natural (drag right -> rotate right).
-                const sensitivity = 0.01;
-                cameraAngle.current = startAngle.current + gestureState.dx * sensitivity;
+                // --- MODIFIED: Handle both zoom and rotation ---
+
+                // Case 1: Two fingers are on the screen (Pinch-to-Zoom)
+                if (gestureState.numberActiveTouches === 2) {
+                    const touches = evt.nativeEvent.touches;
+                    // Calculate the distance between the two fingers.
+                    const dx = touches[0].pageX - touches[1].pageX;
+                    const dy = touches[0].pageY - touches[1].pageY;
+                    const currentPinchDistance = Math.hypot(dx, dy);
+
+                    // If this is the first "move" frame of the pinch, store the initial finger distance.
+                    if (startPinchDistance.current === 0) {
+                        startPinchDistance.current = currentPinchDistance;
+                    } else {
+                        // Calculate the scale factor based on the change in finger distance.
+                        const scale = currentPinchDistance / startPinchDistance.current;
+                        // Adjust camera distance. Dividing by scale makes pinching out zoom in.
+                        const newDistance = startCameraDistance.current / scale;
+                        // Clamp the distance to prevent zooming too far in or out.
+                        cameraDistance.current = Math.max(150, Math.min(2000, newDistance));
+                    }
+                }
+                // Case 2: One finger is on the screen (Drag-to-Rotate)
+                else if (gestureState.numberActiveTouches === 1) {
+                    // Reset pinch distance if user lifts one finger.
+                    startPinchDistance.current = 0;
+                    // Update rotation angle based on horizontal drag.
+                    const sensitivity = 0.01;
+                    cameraAngle.current = startAngle.current - gestureState.dx * sensitivity;
+                }
+            },
+            onPanResponderRelease: () => {
+                // --- NEW: Reset pinch state when all fingers are lifted ---
+                startPinchDistance.current = 0;
             },
         })
     ).current;
@@ -65,7 +98,7 @@ export default function RenderScene() {
             const newHeight = canvasSize.height * scale;
             renderer.setSize(newWidth, newHeight);
             camera.aspect = newWidth / newHeight;
-            camera.position.set(0, 0, 500);
+            // The initial camera position is now fully controlled by the animation loop.
             camera.lookAt(0, 0, 0);
             camera.updateProjectionMatrix();
         }
@@ -79,22 +112,25 @@ export default function RenderScene() {
         const scene = new THREE.Scene();
         const axes = createAxisLines();
         scene.add(axes);
-        const book = createBookCover();
-        scene.add(book);
+        const pallet = createPallet();
+        scene.add(pallet);
+        //const book = createBookCover();
+        //scene.add(book);
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(0, 0, 100);
         scene.add(light);
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        // --- 3. Updated Animation Loop ---
-        // The animation loop now reads the angle from the ref on every frame
-        // to position the camera, instead of running its own automatic animation.
+        // --- 3. Updated Animation Loop (using both angle and distance) ---
         const animate = () => {
+            // --- MODIFIED: Read both angle and distance from refs ---
             const currentAngle = cameraAngle.current;
+            const currentDistance = cameraDistance.current;
 
-            sceneCamera.position.x = Math.cos(currentAngle) * 500;
-            sceneCamera.position.z = Math.sin(currentAngle) * 500;
+            // Update camera position using polar coordinates (angle and distance).
+            sceneCamera.position.x = Math.sin(currentAngle) * currentDistance;
+            sceneCamera.position.z = Math.cos(currentAngle) * currentDistance;
             sceneCamera.lookAt(0, 0, 0);
 
             sceneRenderer.render(scene, sceneCamera);
@@ -109,8 +145,6 @@ export default function RenderScene() {
         setCanvasSize({ width, height });
     };
 
-    // --- 4. Apply Pan Handlers to the View ---
-    // The pan handlers are spread onto the main View, making the whole area draggable.
     return (
         <View style={{ flex: 1 }} onLayout={onLayout} {...panResponder.panHandlers}>
             <Text style={{
@@ -132,4 +166,3 @@ export default function RenderScene() {
         </View>
     );
 }
-
