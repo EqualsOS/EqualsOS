@@ -7,42 +7,33 @@ export default function createBookshelf(): THREE.Group {
     const shelfWidth = 315; // mm
     const shelfHeight = 350; // mm
 
-    // Calculate total bookshelf height
-    const totalHeight = shelfHeight * 3;
+    // Total height of the frame
+    const frameHeight = shelfHeight * 3 + shelfThickness;
 
-    // Create frame (simplified, no back)
-    const frameGeometry = new THREE.BoxGeometry(shelfThickness, totalHeight, shelfWidth); // Match shelf depth
+    // --- Create Side Frames ---
+    const frameGeometry = new THREE.BoxGeometry(shelfThickness, frameHeight, shelfWidth);
     const frameMaterial = new THREE.MeshStandardMaterial({ color: shelfColour });
 
     const leftFrame = new THREE.Mesh(frameGeometry, frameMaterial);
-    leftFrame.position.x = -shelfWidth / 2 - shelfThickness / 2;
-    leftFrame.position.y = totalHeight / 2; // Center vertically
+    leftFrame.position.set(-shelfWidth / 2 - shelfThickness / 2, frameHeight / 2, 0);
 
     const rightFrame = new THREE.Mesh(frameGeometry, frameMaterial);
-    rightFrame.position.x = shelfWidth / 2 + shelfThickness / 2;
-    rightFrame.position.y = totalHeight / 2; // Center vertically
+    rightFrame.position.set(shelfWidth / 2 + shelfThickness / 2, frameHeight / 2, 0);
 
     bookshelfGroup.add(leftFrame, rightFrame);
 
-    // Create shelves
+    // --- Create Shelves ---
     const shelfGeometry = new THREE.BoxGeometry(shelfWidth + shelfThickness * 2, shelfThickness, shelfWidth);
     const shelfMaterial = new THREE.MeshStandardMaterial({ color: shelfColour });
 
-    // Original shelves
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
         const shelf = new THREE.Mesh(shelfGeometry, shelfMaterial);
-        shelf.position.y = i * shelfHeight;
+        shelf.position.y = (i * shelfHeight) + shelfThickness / 2;
         bookshelfGroup.add(shelf);
     }
 
-    // Mirrored top shelf
-    const mirroredShelf = new THREE.Mesh(shelfGeometry, shelfMaterial);
-    mirroredShelf.position.y = totalHeight; // Position above the original top shelf, attached to the frame
-    bookshelfGroup.add(mirroredShelf);
-
-    // Set the origin to the center of the original bottom shelf, touching the ground
-    bookshelfGroup.position.y = shelfHeight / 2;
-    bookshelfGroup.rotation.x = Math.PI; // Rotate 180 degrees around the X axis
+    // Set the origin to the bottom of the bottom shelf
+    bookshelfGroup.position.y = 0;
 
     return bookshelfGroup;
 }
