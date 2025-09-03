@@ -38,9 +38,9 @@ export default function createBookshelf(): THREE.Group {
     // --- Place Books ---
     const bookDimensions = { height: 220, thickness: 100 };
     const booksPerShelf = 12;
-    const removedBookShelf = 2; // Third shelf
-    const removedBookIndex = 4; // Fifth book
-    const leaningBookIndex = 3; // Fourth book
+    const removedBookShelf = 2; // The third shelf (indices start at 0)
+    const removedBookIndex = 4; // The fifth book (indices start at 0)
+    const leaningBookIndex = 3; // The fourth book, which will lean
 
     for (let shelfIndex = 0; shelfIndex < 3; shelfIndex++) {
         const shelfTopY = (shelfIndex * (shelfGapHeight + shelfThickness)) + shelfThickness;
@@ -48,40 +48,46 @@ export default function createBookshelf(): THREE.Group {
 
         for (let bookIndex = 0; bookIndex < booksPerShelf; bookIndex++) {
             if (shelfIndex === removedBookShelf && bookIndex === removedBookIndex) {
-                continue; // Skip the removed book
+                continue;
             }
 
             const book = createBook();
-            book.rotation.y = Math.PI / 2;
+            book.rotation.y = Math.PI / 2; // Stand the book upright
 
             const startX = -innerShelfLength / 2;
             const bookCenterX = startX + (bookIndex * bookDimensions.thickness) + (bookDimensions.thickness / 2);
 
-            book.position.set(bookCenterX, bookCenterY, 0);
-
             if (shelfIndex === removedBookShelf && bookIndex === leaningBookIndex) {
-                // Define the world axis for leaning (Z-axis points front-to-back)
-                const leanAxis = new THREE.Vector3(0, 0, 1);
+                // Use a helper "pivot" object for a physically accurate lean.
+                const pivot = new THREE.Object3D();
+                bookshelfGroup.add(pivot);
 
-                // Define the angle to lean. A negative value leans to the right.
-                const leanAngle = -Math.PI / 16; // ~11 degrees to the right
+                // 1. Position the pivot at the book's bottom-right corner.
+                pivot.position.set(bookCenterX + bookDimensions.thickness / 2, shelfTopY, 0);
 
-                // Apply the rotation around the world axis
-                book.rotateOnWorldAxis(leanAxis, leanAngle);
+                // 2. Add the book to the pivot, positioned relative to the pivot point.
+                book.position.set(-bookDimensions.thickness / 2, bookDimensions.height / 2, 0);
+                pivot.add(book);
 
-                // Adjust the book's final position to have it rest in the gap
-                book.position.x += 12;
-                book.position.y -= 6;
+                // 3. Calculate the exact angle needed to touch the next book.
+                //const leanAngle = -Math.atan(bookDimensions.thickness / bookDimensions.height);
+
+                // 4. Rotate the pivot, which swings the book perfectly.
+                pivot.rotation.z = -Math.atan(bookDimensions.thickness / bookDimensions.height);
+
+            } else {
+                // This is a normal book, position and add it directly.
+                book.position.set(bookCenterX, bookCenterY, 0);
+                bookshelfGroup.add(book);
             }
-
-            bookshelfGroup.add(book);
         }
     }
 
-    // --- Place Book on Top ---
+    // --- Place the "removed" book on top of the bookshelf ---
     const bookOnTop = createBook();
     bookOnTop.rotation.x = Math.PI / 2;
-    bookOnTop.position.set(0, totalHeight + bookDimensions.thickness / 2, 0);
+    const bookOnTopHeight = bookDimensions.thickness;
+    bookOnTop.position.set(0, totalHeight + bookOnTopHeight / 2, 0);
     bookshelfGroup.add(bookOnTop);
 
     return bookshelfGroup;
