@@ -78,20 +78,27 @@ export default function createPallet(): THREE.Group {
     const bottomLeadBoardGeom = new THREE.BoxGeometry(PALLET_WIDTH, PLANK_THICKNESS, LEAD_BOARD_WIDTH);
     const bottomStandardBoardGeom = new THREE.BoxGeometry(PALLET_WIDTH, PLANK_THICKNESS, STANDARD_BOARD_WIDTH);
 
-    // Back lead board
-    const backBoard = new THREE.Mesh(bottomLeadBoardGeom, woodMaterial);
-    backBoard.position.set(0, bottomBoardY, -(PALLET_DEPTH / 2) + (LEAD_BOARD_WIDTH / 2));
-    pallet.add(backBoard);
+    // Define the z-positions for the 5 bottom boards
+    const backPos = -(PALLET_DEPTH / 2) + (LEAD_BOARD_WIDTH / 2);
+    const frontPos = (PALLET_DEPTH / 2) - (LEAD_BOARD_WIDTH / 2);
 
-    // Middle standard board
-    const middleBoard = new THREE.Mesh(bottomStandardBoardGeom, woodMaterial);
-    middleBoard.position.set(0, bottomBoardY, 0);
-    pallet.add(middleBoard);
+    const bottomBoardPositions = [
+        backPos,          // Back lead board
+        backPos / 2,      // Board between back and middle
+        0,                // Middle standard board
+        frontPos / 2,     // Board between middle and front
+        frontPos          // Front lead board
+    ];
 
-    // Front lead board
-    const frontBoard = new THREE.Mesh(bottomLeadBoardGeom, woodMaterial);
-    frontBoard.position.set(0, bottomBoardY, (PALLET_DEPTH / 2) - (LEAD_BOARD_WIDTH / 2));
-    pallet.add(frontBoard);
+    bottomBoardPositions.forEach((pos, index) => {
+        // Use lead board geometry for the first and last boards, standard for the rest
+        const isLeadBoard = (index === 0 || index === bottomBoardPositions.length - 1);
+        const boardGeometry = isLeadBoard ? bottomLeadBoardGeom : bottomStandardBoardGeom;
+
+        const board = new THREE.Mesh(boardGeometry, woodMaterial);
+        board.position.set(0, bottomBoardY, pos);
+        pallet.add(board);
+    });
 
     return pallet;
 }
