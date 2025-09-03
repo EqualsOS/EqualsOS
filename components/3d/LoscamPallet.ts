@@ -32,6 +32,7 @@ export default function createPallet(): THREE.Group {
         STANDARD_BOARD_WIDTH,
         STANDARD_BOARD_WIDTH,
         STANDARD_BOARD_WIDTH,
+        STANDARD_BOARD_WIDTH,
         LEAD_BOARD_WIDTH        // Front lead board
     ];
 
