@@ -71,22 +71,22 @@ export default function createPallet(): THREE.Group {
         pallet.add(bearer);
     });
 
-    // --- 3. Create Bottom Boards ---
+    // --- 3. Create Bottom Boards (with corrected spacing) ---
     const bottomBoardY = -(PALLET_HEIGHT / 2) + (PLANK_THICKNESS / 2);
 
     // Create geometries for the two types of bottom boards
     const bottomLeadBoardGeom = new THREE.BoxGeometry(PALLET_WIDTH, PLANK_THICKNESS, LEAD_BOARD_WIDTH);
     const bottomStandardBoardGeom = new THREE.BoxGeometry(PALLET_WIDTH, PLANK_THICKNESS, STANDARD_BOARD_WIDTH);
 
-    // Define the z-positions for the 5 bottom boards
+    // Define the exact z-positions for the 5 bottom boards to match the spec
     const backPos = -(PALLET_DEPTH / 2) + (LEAD_BOARD_WIDTH / 2);
     const frontPos = (PALLET_DEPTH / 2) - (LEAD_BOARD_WIDTH / 2);
 
     const bottomBoardPositions = [
         backPos,          // Back lead board
-        backPos / 2,      // Board between back and middle
+        -150,           // Adjusted position for the board between back and middle
         0,                // Middle standard board
-        frontPos / 2,     // Board between middle and front
+        150,            // Adjusted position for the board between middle and front
         frontPos          // Front lead board
     ];
 
