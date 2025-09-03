@@ -84,11 +84,33 @@ export default function createBookshelf(): THREE.Group {
     }
 
     // --- Place the "removed" book on top of the bookshelf ---
+
+    // Use a helper object to manage rotation and placement cleanly.
+    const placementHelper = new THREE.Object3D();
+    bookshelfGroup.add(placementHelper);
+
+    // 1. Set the final orientation of the book using the helper.
+    // A rotation of Math.PI makes the spine face the back.
+    placementHelper.rotation.y = Math.PI; // Rotated 180 degrees
+
+    // 2. Create the book itself.
     const bookOnTop = createBook();
+
+    // 3. Make the book lie flat on its back. This is its only rotation.
     bookOnTop.rotation.x = Math.PI / 2;
+
+    // 4. Add the flat book to the rotated helper.
+    placementHelper.add(bookOnTop);
+
+    // After rotating, the book's original 'depth'/'thickness' becomes its height.
     const bookOnTopHeight = bookDimensions.thickness;
-    bookOnTop.position.set(0, totalHeight + bookOnTopHeight / 2, 0);
-    bookshelfGroup.add(bookOnTop);
+
+    // 5. Position the entire helper group.
+    placementHelper.position.set(
+        -150, // Kept left of center
+        totalHeight + bookOnTopHeight / 2,
+        50    // Kept towards the front
+    );
 
     return bookshelfGroup;
 }
