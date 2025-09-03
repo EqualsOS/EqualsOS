@@ -9,7 +9,7 @@ export default function createPallet(): THREE.Group {
 
     // --- Materials ---
     const woodMaterial = new THREE.MeshLambertMaterial({ color: 0xc2b280 }); // Light brown wood
-    const blockMaterial = new THREE.MeshLambertMaterial({ color: 0x8b0000 }); // Red/dark blocks
+    const bearerMaterial = new THREE.MeshLambertMaterial({ color: 0x8b0000 }); // Red/dark bearers
 
     // --- Pallet Dimensions (in mm) ---
     const PALLET_WIDTH = 1165;
@@ -21,8 +21,8 @@ export default function createPallet(): THREE.Group {
     const TOP_PLANK_WIDTH = 100;
     const NUM_TOP_PLANKS = 7;
 
-    const BLOCK_HEIGHT = 106; // Pallet height - top and bottom plank thickness
-    const BLOCK_SIZE = 145;
+    const BEARER_HEIGHT = 106; // Pallet height - top and bottom plank thickness
+    const BEARER_WIDTH = 145;
 
     const BOTTOM_BOARD_THICKNESS = 22;
     const BOTTOM_BOARD_WIDTH = 145;
@@ -40,31 +40,21 @@ export default function createPallet(): THREE.Group {
         pallet.add(plank);
     }
 
-    // --- 2. Create Support Blocks ---
-    const blockGeometry = new THREE.BoxGeometry(BLOCK_SIZE, BLOCK_HEIGHT, BLOCK_SIZE);
-    const blockY = 0; // Blocks are centered vertically
-    const outerX = (PALLET_WIDTH / 2) - (BLOCK_SIZE / 2);
-    const outerZ = (PALLET_DEPTH / 2) - (BLOCK_SIZE / 2);
+    // --- 2. Create Bottom Bearers (Stringers) ---
+    const bearerGeometry = new THREE.BoxGeometry(BEARER_WIDTH, BEARER_HEIGHT, PALLET_DEPTH);
+    const bearerY = 0; // Bearers are centered vertically
+    const outerX = (PALLET_WIDTH / 2) - (BEARER_WIDTH / 2);
 
-    const blockPositions = [
-        // Back row
-        new THREE.Vector3(-outerX, blockY, -outerZ),
-        new THREE.Vector3(0, blockY, -outerZ),
-        new THREE.Vector3(outerX, blockY, -outerZ),
-        // Middle row
-        new THREE.Vector3(-outerX, blockY, 0),
-        new THREE.Vector3(0, blockY, 0),
-        new THREE.Vector3(outerX, blockY, 0),
-        // Front row
-        new THREE.Vector3(-outerX, blockY, outerZ),
-        new THREE.Vector3(0, blockY, outerZ),
-        new THREE.Vector3(outerX, blockY, outerZ),
+    const bearerPositions = [
+        new THREE.Vector3(-outerX, bearerY, 0), // Left bearer
+        new THREE.Vector3(0, bearerY, 0),       // Middle bearer
+        new THREE.Vector3(outerX, bearerY, 0),  // Right bearer
     ];
 
-    blockPositions.forEach(pos => {
-        const block = new THREE.Mesh(blockGeometry, blockMaterial);
-        block.position.copy(pos);
-        pallet.add(block);
+    bearerPositions.forEach(pos => {
+        const bearer = new THREE.Mesh(bearerGeometry, bearerMaterial);
+        bearer.position.copy(pos);
+        pallet.add(bearer);
     });
 
     // --- 3. Create Bottom Boards ---
@@ -72,9 +62,9 @@ export default function createPallet(): THREE.Group {
     const bottomBoardY = -(PALLET_HEIGHT / 2) + (BOTTOM_BOARD_THICKNESS / 2);
 
     const bottomBoardPositions = [
-        new THREE.Vector3(0, bottomBoardY, -outerZ), // Back board
+        new THREE.Vector3(0, bottomBoardY, -(PALLET_DEPTH / 2) + (BOTTOM_BOARD_WIDTH / 2)), // Back board
         new THREE.Vector3(0, bottomBoardY, 0),       // Middle board
-        new THREE.Vector3(0, bottomBoardY, outerZ),  // Front board
+        new THREE.Vector3(0, bottomBoardY, (PALLET_DEPTH / 2) - (BOTTOM_BOARD_WIDTH / 2)),  // Front board
     ];
 
     bottomBoardPositions.forEach(pos => {
