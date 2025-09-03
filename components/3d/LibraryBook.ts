@@ -2,7 +2,7 @@ import { THREE } from 'expo-three';
 
 const dummy = new THREE.Object3D();
 
-export function createBookCover() {
+export default function createBook() {
     const bookCoverMaterial = new THREE.MeshStandardMaterial({
         color: 0x808080,
         roughness: 1

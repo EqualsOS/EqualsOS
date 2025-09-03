@@ -5,7 +5,10 @@ import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent, PanRespon
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
-import createRedRockDeliBox from "@/components/3d/RedRockDeliBox";
+//import createRedRockDeliBox from '@/components/3d/RedRockDeliBox';
+//import createPallet from '@/components/3d/LoscamPallet';
+//import createBook from '@/components/3d/LibraryBook';
+import createBookshelf from '@/components/3d/Bookshelf';
 
 export default function RenderScene() {
     // --- Existing Hooks and State ---
@@ -112,12 +115,14 @@ export default function RenderScene() {
         const scene = new THREE.Scene();
         const axes = createAxisLines();
         scene.add(axes);
-        const redRockDeliBox = createRedRockDeliBox();
-        scene.add(redRockDeliBox);
+        //const redRockDeliBox = createRedRockDeliBox();
+        //scene.add(redRockDeliBox);
         //const pallet = createPallet();
         //scene.add(pallet);
-        //const book = createBookCover();
+        //const book = createBook();
         //scene.add(book);
+        const bookshelf = createBookshelf();
+        scene.add(bookshelf);
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(0, 0, 100);
         scene.add(light);
