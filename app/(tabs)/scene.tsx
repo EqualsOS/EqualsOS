@@ -5,7 +5,9 @@ import { Platform, Text, View, useWindowDimensions, LayoutChangeEvent, PanRespon
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
-import createBookshelf from '@/components/3d/Bookshelf';
+import createGridHelper from '@/components/3d/GridHelper';
+//import createBookshelf from '@/components/3d/Bookshelf';
+import createPallet from '@/components/3d/LoscamPallet';
 
 export default function RenderScene() {
     // --- Existing Hooks and State ---
@@ -122,11 +124,16 @@ export default function RenderScene() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x111111); // Dark background
 
+        const gridHelper = createGridHelper();
+        scene.add(gridHelper);
+
         const axes = createAxisLines();
         scene.add(axes);
 
-        const bookshelf = createBookshelf();
-        scene.add(bookshelf);
+        //const bookshelf = createBookshelf();
+        //scene.add(bookshelf);
+        const pallet = createPallet();
+        scene.add(pallet);
 
         const light = new THREE.DirectionalLight(0xffffff, 1.5);
         light.position.set(500, 1000, 750);
