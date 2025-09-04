@@ -90,8 +90,7 @@ export default function createBookshelf(): THREE.Group {
     bookshelfGroup.add(placementHelper);
 
     // 1. Set the final orientation of the book using the helper.
-    // A rotation of Math.PI makes the spine face the back.
-    placementHelper.rotation.y = Math.PI; // Rotated 180 degrees
+    placementHelper.rotation.y = -0.2;
 
     // 2. Create the book itself.
     const bookOnTop = createBook();
@@ -109,7 +108,7 @@ export default function createBookshelf(): THREE.Group {
     placementHelper.position.set(
         -150, // Kept left of center
         totalHeight + bookOnTopHeight / 2,
-        50    // Kept towards the front
+        -22.5 // Positioned so its back edge is just before the bookcase's back edge
     );
 
     return bookshelfGroup;
