@@ -7,7 +7,9 @@ import { THREE } from 'expo-three';
 export default function createAngledPlatform(): THREE.Group {
     const platformGroup = new THREE.Group();
 
-    // --- Materials ---
+    // --- Material ---
+    // This material has emissive properties that will be picked up
+    // by the BloomEffect in your main scene file to create a glow.
     const platformMaterial = new THREE.MeshLambertMaterial({
         color: 0xADD8E6, // Light blue
         emissive: 0xADD8E6,
@@ -33,14 +35,16 @@ export default function createAngledPlatform(): THREE.Group {
     const rampGeometry = new THREE.BoxGeometry(BASE_WIDTH, BASE_HEIGHT, RAMP_LENGTH);
     const ramp = new THREE.Mesh(rampGeometry, platformMaterial);
 
-    // Calculate position for the ramp to connect to the side of the base
+    // Final positioning as figured out by you.
     ramp.position.set(
         0,
-        BASE_HEIGHT * 3, // Adjusted Y position
-        RAMP_LENGTH / 2 * Math.cos(RAMP_ANGLE) - BASE_DEPTH / 2 + BASE_WIDTH
+        BASE_HEIGHT * 3, // The correct Y position you found
+        // This Z calculation positions the ramp relative to the base
+        (RAMP_LENGTH / 2 * Math.cos(RAMP_ANGLE)) - (BASE_DEPTH / 2) + BASE_WIDTH
     );
 
-    ramp.rotation.x = -RAMP_ANGLE; // Rotate around X-axis to lean upwards
+    ramp.rotation.x = -RAMP_ANGLE;
+
     platformGroup.add(ramp);
 
     return platformGroup;
