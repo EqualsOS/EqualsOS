@@ -7,7 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
 //import createBookshelf from '@/components/3d/Bookshelf';
-import createPallet from '@/components/3d/LoscamPallet';
+//import createPallet from '@/components/3d/LoscamPallet';
+import createAngledPlatform from '@/components/3d/AngledPlatform';
 
 export default function RenderScene() {
     // --- Existing Hooks and State ---
@@ -132,8 +133,10 @@ export default function RenderScene() {
 
         //const bookshelf = createBookshelf();
         //scene.add(bookshelf);
-        const pallet = createPallet();
-        scene.add(pallet);
+        //const pallet = createPallet();
+        //scene.add(pallet);
+        const angledPlatform = createAngledPlatform();
+        scene.add(angledPlatform);
 
         const light = new THREE.DirectionalLight(0xffffff, 1.5);
         light.position.set(500, 1000, 750);
