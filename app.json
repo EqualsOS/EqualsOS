@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "My3DScene",
-    "slug": "My3DScene",
+    "name": "EqualsOS",
+    "slug": "EqualsOS",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "my3dscene",
+    "scheme": "equalsos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

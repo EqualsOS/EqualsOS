@@ -1,98 +1,174 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber/native';
+import { View, StyleSheet, PanResponder, Text, useWindowDimensions, LayoutChangeEvent, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Mesh } from 'three';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// --- 1. Import your custom helper functions ---
+import createAngledPlatform from '@/components/3d/AngledPlatform';
+import createAxisLines from '@/components/3d/AxisLines';
+import createGridHelper from '@/components/3d/GridHelper';
 
+// --- Camera Controller Component ---
+function CameraController({ angleRef, distanceRef }: { angleRef: React.MutableRefObject<number>, distanceRef: React.MutableRefObject<number> }) {
+    useFrame(({ camera }) => {
+        camera.position.x = Math.sin(angleRef.current) * distanceRef.current;
+        camera.position.z = Math.cos(angleRef.current) * distanceRef.current;
+        camera.position.y = 800;
+        camera.lookAt(0, 0, 0);
+    });
+    return null;
+}
+
+// --- Wrapper components for your 3D objects ---
+function PlatformModel() {
+    const platform = useMemo(() => createAngledPlatform(), []);
+    return <primitive object={platform} />;
+}
+
+function AxisLinesModel() {
+    const axes = useMemo(() => createAxisLines(1000), []); // Pass a size argument
+    return <primitive object={axes} />;
+}
+
+function GridHelperModel() {
+    const grid = useMemo(() => createGridHelper(), []);
+    return <primitive object={grid} />;
+}
+
+// The main screen component
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    const cameraAngle = useRef(0);
+    const startAngle = useRef(0);
+    const cameraDistance = useRef(2500);
+    const startCameraDistance = useRef(0);
+    const startPinchDistance = useRef(0);
+    const { scale } = useWindowDimensions();
+    const insets = useSafeAreaInsets();
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    const onLayout = (event: LayoutChangeEvent) => {
+        const { width, height } = event.nativeEvent.layout;
+        setCanvasSize({ width, height });
+    };
+
+    const dimensionsText = useMemo(() => {
+        const canvasWidth = (canvasSize.width * scale).toFixed(0);
+        const canvasHeight = (canvasSize.height * scale).toFixed(0);
+        return `Canvas: ${canvasWidth} x ${canvasHeight}`;
+    }, [canvasSize, scale]);
+
+    useEffect(() => {
+        async function allowScreenRotation() {
+            if (Platform.OS !== 'web') {
+                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+            }
+        }
+        allowScreenRotation();
+        return () => {
+            if (Platform.OS !== 'web') {
+                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (Platform.OS === 'web') {
+            const handleWheel = (event: WheelEvent) => {
+                const zoomSensitivity = 1.5;
+                const newDistance = cameraDistance.current + event.deltaY * zoomSensitivity;
+                cameraDistance.current = Math.max(500, Math.min(3500, newDistance));
+            };
+            window.addEventListener('wheel', handleWheel);
+            return () => window.removeEventListener('wheel', handleWheel);
+        }
+    }, []);
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderGrant: () => {
+                startAngle.current = cameraAngle.current;
+                startCameraDistance.current = cameraDistance.current;
+            },
+            onPanResponderMove: (evt, gestureState) => {
+                if (gestureState.numberActiveTouches === 2) {
+                    const touches = evt.nativeEvent.touches;
+                    const dx = touches[0].pageX - touches[1].pageX;
+                    const dy = touches[0].pageY - touches[1].pageY;
+                    const currentPinchDistance = Math.hypot(dx, dy);
+
+                    if (startPinchDistance.current === 0) {
+                        startPinchDistance.current = currentPinchDistance;
+                    } else {
+                        const scaleFactor = currentPinchDistance / startPinchDistance.current;
+                        const newDistance = startCameraDistance.current / scaleFactor;
+                        cameraDistance.current = Math.max(500, Math.min(3500, newDistance));
+                    }
+                }
+                else if (gestureState.numberActiveTouches === 1) {
+                    startPinchDistance.current = 0;
+                    const sensitivity = 0.01;
+                    cameraAngle.current = startAngle.current - gestureState.dx * sensitivity;
+                }
+            },
+            onPanResponderRelease: () => {
+                startPinchDistance.current = 0;
+            },
+        })
+    ).current;
+
+    return (
+        <View style={styles.container} onLayout={onLayout}>
+            <Canvas camera={{ fov: 50, far: 10000 }}>
+                <CameraController angleRef={cameraAngle} distanceRef={cameraDistance} />
+                <ambientLight intensity={0.8} />
+                <directionalLight position={[500, 1000, 750]} intensity={1.5} />
+
+                <GridHelperModel />
+                <AxisLinesModel />
+                <PlatformModel />
+            </Canvas>
+            <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers} />
+
+            {/* --- UPDATED: UI Overlay View --- */}
+            <View style={[styles.overlay, { top: insets.top, left: insets.left + 10 }]}>
+                <Text style={styles.overlayText}>
+                    {dimensionsText}
+                </Text>
+
+                {/* --- NEW: Coloured Axis Labels --- */}
+                <View style={{ marginTop: 5, opacity: 0.8 }}>
+                    <Text style={styles.overlayText}>
+                        <Text style={{ color: 'red', fontWeight: 'bold' }}>X</Text> (Horizontal)
+                    </Text>
+                    <Text style={styles.overlayText}>
+                        <Text style={{ color: 'green', fontWeight: 'bold' }}>Y</Text> (Vertical)
+                    </Text>
+                    <Text style={styles.overlayText}>
+                        <Text style={{ color: 'blue', fontWeight: 'bold' }}>Z</Text> (Depth)
+                    </Text>
+                </View>
+            </View>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#111111',
+    },
+    overlay: {
+        position: 'absolute',
+        zIndex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        padding: 8,
+        borderRadius: 5,
+    },
+    overlayText: {
+        color: 'white',
+        fontSize: 12,
+    },
 });
