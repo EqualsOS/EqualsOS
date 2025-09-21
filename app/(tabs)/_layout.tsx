@@ -1,29 +1,85 @@
-// This file is located at 'app/(tabs)/_layout.tsx'
+// app/(tabs)/_layout.tsx
+
 import { Tabs } from 'expo-router';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React from 'react';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
+    const colorScheme = useColorScheme();
+
     return (
-        <Tabs screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: 'white',
-            tabBarStyle: {
-                backgroundColor: '#1c1c1c',
-                borderTopColor: '#333',
-            }
-        }}>
+        <Tabs
+            screenOptions={{
+                tabBarActiveTintColor: 'blue',
+                tabBarInactiveTintColor: 'gray',
+                headerShown: false,
+            }}>
             <Tabs.Screen
-                name="index" // This now points to 'app/(tabs)/index.tsx'
+                name="index"
                 options={{
-                    title: 'Platform', // You can name the tab whatever you like
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="cube" color={color} />,
+                    title: 'Home',
+                    tabBarLabel: 'Home',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+                    ),
                 }}
             />
+
+            {/* NEW entry for the platform screen */}
             <Tabs.Screen
-                name="bookshelf" // This still points to 'app/(tabs)/bookshelf.tsx'
+                name="platform"
+                options={{
+                    title: 'Platform',
+                    tabBarLabel: 'Platform',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'layers' : 'layers-outline'} color={color} />
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="pallet"
+                options={{
+                    title: 'Pallet',
+                    tabBarLabel: 'Pallet',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'grid' : 'grid-outline'} color={color} />
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="box"
+                options={{
+                    title: 'Box',
+                    tabBarLabel: 'Box',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'cube' : 'cube-outline'} color={color} />
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="bookshelf"
                 options={{
                     title: 'Bookshelf',
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="book" color={color} />,
+                    tabBarLabel: 'Bookshelf',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'library' : 'library-outline'} color={color} />
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="explore"
+                options={{
+                    title: 'Explore',
+                    tabBarLabel: 'Explore',
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? 'compass' : 'compass-outline'} color={color} />
+                    ),
                 }}
             />
         </Tabs>

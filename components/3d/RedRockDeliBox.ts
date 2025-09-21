@@ -8,19 +8,18 @@ export default function createRedRockDeliBox(): THREE.Group {
     const BOX_DEPTH = 455;
 
     const cardboardColour = 0xD2B48C;
-    const grayColour = 0x708090; // Updated to Slate Gray
-    //const blueColour = 0xB7D8E5;
+    const grayColour = 0x708090;
 
     const boxGeometry = new THREE.BoxGeometry(BOX_WIDTH, BOX_HEIGHT, BOX_DEPTH);
 
-    // Use MeshStandardMaterial for proper lighting
+    // Using an array of materials to color each face is the correct approach
     const materials = [
-        new THREE.MeshStandardMaterial({ color: grayColour }),
-        new THREE.MeshStandardMaterial({ color: grayColour }),
-        new THREE.MeshStandardMaterial({ color: cardboardColour }),
-        new THREE.MeshStandardMaterial({ color: cardboardColour }),
-        new THREE.MeshStandardMaterial({ color: cardboardColour }),
-        new THREE.MeshStandardMaterial({ color: grayColour })
+        new THREE.MeshStandardMaterial({ color: grayColour }),      // Right face
+        new THREE.MeshStandardMaterial({ color: grayColour }),      // Left face
+        new THREE.MeshStandardMaterial({ color: cardboardColour }), // Top face
+        new THREE.MeshStandardMaterial({ color: cardboardColour }), // Bottom face
+        new THREE.MeshStandardMaterial({ color: cardboardColour }), // Front face
+        new THREE.MeshStandardMaterial({ color: grayColour })       // Back face
     ];
 
     const boxMesh = new THREE.Mesh(boxGeometry, materials);

@@ -1,15 +1,14 @@
-// app/(tabs)/platform.tsx
-
 import React, { useMemo } from 'react';
 import SceneContainer from '@/components/SceneContainer';
 
-import createAngledPlatform from '@/components/3d/AngledPlatform';
+import createLoscamPallet from '@/components/3d/LoscamPallet';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
 
-function PlatformModel() {
-    const model = useMemo(() => createAngledPlatform(), []);
-    return <primitive object={model} />;
+function PalletModel() {
+    const model = useMemo(() => createLoscamPallet(), []);
+    // Position the pallet so it sits on top of the grid
+    return <primitive object={model} position={[0, 150 / 2, 0]} />;
 }
 
 function AxisLinesModel() {
@@ -22,12 +21,12 @@ function GridHelperModel() {
     return <primitive object={model} />;
 }
 
-export default function PlatformScreen() {
+export default function PalletScreen() {
     return (
         <SceneContainer>
             <GridHelperModel />
             <AxisLinesModel />
-            <PlatformModel />
+            <PalletModel />
         </SceneContainer>
     );
 }
