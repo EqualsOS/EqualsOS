@@ -1,5 +1,3 @@
-// components/3d/Bookshelf.ts
-
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import createBook from './LibraryBook';
@@ -31,17 +29,16 @@ export default function createBookshelf(hasMovedBook = false): THREE.Group {
         bookshelfGroup.add(shelf);
     }
 
-    // --- OPTIMIZED: Place Books using Instancing by Material ---
+    // --- OPTIMIZED: A Hybrid of Instancing and Cloning ---
     const bookDimensions = { height: 220, width: 150, thickness: 100 };
     const booksPerShelf = 12;
     const coverDepth = 5;
 
-    // 1. Create and merge geometries for each material type
+    // --- 1. Create Geometries and Materials for Instancing (NO SPINE HERE) ---
     const greyMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 1 });
     const frontCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth).translate(0, 0, bookDimensions.thickness * 0.5 - coverDepth * 0.5);
     const backCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth).translate(0, 0, bookDimensions.thickness * -0.5 + coverDepth * 0.5);
-    const spineGeom = new THREE.BoxGeometry(coverDepth, bookDimensions.height, bookDimensions.thickness).translate(bookDimensions.width * -0.5, 0, 0);
-    const mergedGreyGeom = BufferGeometryUtils.mergeGeometries([frontCoverGeom, backCoverGeom, spineGeom]);
+    const mergedGreyGeom = BufferGeometryUtils.mergeGeometries([frontCoverGeom, backCoverGeom]);
 
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     const availableInnerBookDepth = bookDimensions.thickness - (coverDepth * 2);
@@ -73,24 +70,28 @@ export default function createBookshelf(hasMovedBook = false): THREE.Group {
         }
     }
 
-    // 3. Create an InstancedMesh for each material type
-    if (mergedGreyGeom) {
-        const greyInstances = new THREE.InstancedMesh(mergedGreyGeom, greyMaterial, matrices.length);
-        matrices.forEach((matrix, i) => greyInstances.setMatrixAt(i, matrix));
-        bookshelfGroup.add(greyInstances);
-    }
-    if (pageBlockGeom) {
-        const whiteInstances = new THREE.InstancedMesh(pageBlockGeom, whiteMaterial, matrices.length);
-        matrices.forEach((matrix, i) => whiteInstances.setMatrixAt(i, matrix));
-        bookshelfGroup.add(whiteInstances);
-    }
-    if (mergedGoldGeom) {
-        const goldInstances = new THREE.InstancedMesh(mergedGoldGeom, goldMaterial, matrices.length);
-        matrices.forEach((matrix, i) => goldInstances.setMatrixAt(i, matrix));
-        bookshelfGroup.add(goldInstances);
+    // 3. Create the InstancedMeshes
+    const greyInstances = new THREE.InstancedMesh(mergedGreyGeom, greyMaterial, matrices.length);
+    const whiteInstances = new THREE.InstancedMesh(pageBlockGeom, whiteMaterial, matrices.length);
+    const goldInstances = new THREE.InstancedMesh(mergedGoldGeom, goldMaterial, matrices.length);
+    matrices.forEach((matrix, i) => {
+        greyInstances.setMatrixAt(i, matrix);
+        whiteInstances.setMatrixAt(i, matrix);
+        goldInstances.setMatrixAt(i, matrix);
+    });
+    bookshelfGroup.add(greyInstances, whiteInstances, goldInstances);
+
+    // --- 4. Create and Clone the Detailed Spine ---
+    const masterSpine = (createBook(true).children.find(c => c.name === 'spine') as THREE.Mesh);
+    if(masterSpine) {
+        matrices.forEach(matrix => {
+            const spineClone = masterSpine.clone();
+            spineClone.applyMatrix4(matrix); // Apply the same position/rotation as the other parts
+            bookshelfGroup.add(spineClone);
+        });
     }
 
-    // 4. Create the unique, non-instanced books (with detailed curved spines) only if needed
+    // 5. Create the unique, non-instanced books only if needed
     if (hasMovedBook) {
         const leaningBook = createBook(true);
         const shelfTopY = (2 * (shelfGapHeight + shelfThickness)) + shelfThickness;

@@ -35,6 +35,7 @@ export default function createBook(isOptimized = true) {
     const curve = new THREE.EllipseCurve(0, 0, bookDepth * 0.5, bookDepth * 0.25, 0, Math.PI, false, 0);
     const points = curve.getPoints(50);
     const spine = new THREE.Mesh(new THREE.ExtrudeGeometry(new THREE.Shape(points), { depth: bookHeight, bevelEnabled: false }), bookCoverMaterial);
+    spine.name = 'spine';
     spine.position.x = bookWidth * -0.5;
     spine.position.y = bookHeight * 0.5;
     spine.rotation.set(Math.PI / 2, 0, Math.PI / 2);
