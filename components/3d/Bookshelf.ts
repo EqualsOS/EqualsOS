@@ -1,3 +1,5 @@
+// components/3d/Bookshelf.ts
+
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import createBook from './LibraryBook';
@@ -34,14 +36,11 @@ export default function createBookshelf(hasMovedBook = false): THREE.Group {
     const booksPerShelf = 12;
     const coverDepth = 5;
 
-    // 1. Explicitly create and merge geometries for each material type
+    // 1. Create and merge geometries for each material type
     const greyMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 1 });
-    const frontCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth)
-        .translate(0, 0, bookDimensions.thickness * 0.5 - coverDepth * 0.5);
-    const backCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth)
-        .translate(0, 0, bookDimensions.thickness * -0.5 + coverDepth * 0.5);
-    const spineGeom = new THREE.BoxGeometry(coverDepth, bookDimensions.height, bookDimensions.thickness)
-        .translate(bookDimensions.width * -0.5, 0, 0);
+    const frontCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth).translate(0, 0, bookDimensions.thickness * 0.5 - coverDepth * 0.5);
+    const backCoverGeom = new THREE.BoxGeometry(bookDimensions.width, bookDimensions.height, coverDepth).translate(0, 0, bookDimensions.thickness * -0.5 + coverDepth * 0.5);
+    const spineGeom = new THREE.BoxGeometry(coverDepth, bookDimensions.height, bookDimensions.thickness).translate(bookDimensions.width * -0.5, 0, 0);
     const mergedGreyGeom = BufferGeometryUtils.mergeGeometries([frontCoverGeom, backCoverGeom, spineGeom]);
 
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
@@ -75,18 +74,23 @@ export default function createBookshelf(hasMovedBook = false): THREE.Group {
     }
 
     // 3. Create an InstancedMesh for each material type
-    const greyInstances = new THREE.InstancedMesh(mergedGreyGeom, greyMaterial, matrices.length);
-    const whiteInstances = new THREE.InstancedMesh(pageBlockGeom, whiteMaterial, matrices.length);
-    const goldInstances = new THREE.InstancedMesh(mergedGoldGeom, goldMaterial, matrices.length);
+    if (mergedGreyGeom) {
+        const greyInstances = new THREE.InstancedMesh(mergedGreyGeom, greyMaterial, matrices.length);
+        matrices.forEach((matrix, i) => greyInstances.setMatrixAt(i, matrix));
+        bookshelfGroup.add(greyInstances);
+    }
+    if (pageBlockGeom) {
+        const whiteInstances = new THREE.InstancedMesh(pageBlockGeom, whiteMaterial, matrices.length);
+        matrices.forEach((matrix, i) => whiteInstances.setMatrixAt(i, matrix));
+        bookshelfGroup.add(whiteInstances);
+    }
+    if (mergedGoldGeom) {
+        const goldInstances = new THREE.InstancedMesh(mergedGoldGeom, goldMaterial, matrices.length);
+        matrices.forEach((matrix, i) => goldInstances.setMatrixAt(i, matrix));
+        bookshelfGroup.add(goldInstances);
+    }
 
-    matrices.forEach((matrix, i) => {
-        greyInstances.setMatrixAt(i, matrix);
-        whiteInstances.setMatrixAt(i, matrix);
-        goldInstances.setMatrixAt(i, matrix);
-    });
-    bookshelfGroup.add(greyInstances, whiteInstances, goldInstances);
-
-    // --- 4. UPDATED: Added the special book creation logic back in ---
+    // 4. Create the unique, non-instanced books (with detailed curved spines) only if needed
     if (hasMovedBook) {
         const leaningBook = createBook(true);
         const shelfTopY = (2 * (shelfGapHeight + shelfThickness)) + shelfThickness;

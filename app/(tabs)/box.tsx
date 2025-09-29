@@ -1,8 +1,10 @@
 // app/(tabs)/box.tsx
 
 import React, { useMemo } from 'react';
-import SceneContainer from '@/components/SceneContainer';
+import {View, StyleSheet, ActivityIndicator, Text} from 'react-native';
 
+import SceneWrapper from '@/components/SceneWrapper'; // Import the new wrapper
+import { useModel } from '@/hooks/use-model';
 import createRedRockDeliBox from '@/components/3d/RedRockDeliBox';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
@@ -18,13 +20,37 @@ function GridHelperModel() {
 }
 
 export default function BoxScreen() {
+    const boxModel = useModel(createRedRockDeliBox);
+
+    if (!boxModel) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Building Model...</Text>
+                <ActivityIndicator size="large" color="#ffffff" />
+            </View>
+        );
+    }
+
     return (
-        <SceneContainer
-            createModel={createRedRockDeliBox}
-            modelPosition={[0, 240 / 2, 0]} // Position the box on the grid floor
-        >
+        <SceneWrapper>
             <GridHelperModel />
             <AxisLinesModel />
-        </SceneContainer>
+            <primitive object={boxModel} position={[0, 240 / 2, 0]} />
+        </SceneWrapper>
     );
 }
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: '#111111',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginBottom: 20, // Changed from marginTop to marginBottom
+        color: '#ffffff',
+        fontSize: 16,
+        fontStyle: 'italic',
+    },
+});
