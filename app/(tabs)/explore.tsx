@@ -1,3 +1,5 @@
+// app/(tabs)/explore.tsx
+
 import React, { useMemo } from 'react';
 import SceneContainer from '@/components/SceneContainer';
 
@@ -5,9 +7,13 @@ import createBookshelf from '@/components/3d/Bookshelf';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
 
-// This component accepts position and rotation props
-function BookshelfModel({ position, rotation }: { position: [number, number, number]; rotation?: [number, number, number] }) {
-    const model = useMemo(() => createBookshelf(), []);
+// This component now accepts an optional 'hasMovedBook' prop
+function BookshelfModel({ position, rotation, hasMovedBook }: {
+    position: [number, number, number];
+    rotation?: [number, number, number];
+    hasMovedBook?: boolean;
+}) {
+    const model = useMemo(() => createBookshelf(hasMovedBook), [hasMovedBook]);
     return <primitive object={model} position={position} rotation={rotation} />;
 }
 
@@ -25,16 +31,16 @@ function GridHelperModel() {
 type BookshelfProps = {
     position: [number, number, number];
     rotation?: [number, number, number];
+    hasMovedBook?: boolean;
 };
 
 export default function ExploreScreen() {
-    // --- UPDATED: Array for a 2x2 layout ---
     const bookshelfPositions: BookshelfProps[] = [
-        // Back Row
+        // Back Row (full bookshelves)
         { position: [-637.5, 0, -862.5], rotation: [0, Math.PI / 2, 0] },
         { position: [637.5, 0, -862.5], rotation: [0, -Math.PI / 2, 0] },
-        // Front Row
-        { position: [-637.5, 0, 862.5], rotation: [0, Math.PI / 2, 0] },
+        // Front Row (one with the moved book effect)
+        { position: [-637.5, 0, 862.5], rotation: [0, Math.PI / 2, 0], hasMovedBook: true },
         { position: [637.5, 0, 862.5], rotation: [0, -Math.PI / 2, 0] },
     ];
 
