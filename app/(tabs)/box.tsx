@@ -1,15 +1,11 @@
+// app/(tabs)/box.tsx
+
 import React, { useMemo } from 'react';
 import SceneContainer from '@/components/SceneContainer';
 
 import createRedRockDeliBox from '@/components/3d/RedRockDeliBox';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
-
-function BoxModel() {
-    const model = useMemo(() => createRedRockDeliBox(), []);
-    // Position the box so it sits on top of the grid
-    return <primitive object={model} position={[0, 240 / 2, 0]} />;
-}
 
 function AxisLinesModel() {
     const model = useMemo(() => createAxisLines(1000), []);
@@ -23,10 +19,12 @@ function GridHelperModel() {
 
 export default function BoxScreen() {
     return (
-        <SceneContainer>
+        <SceneContainer
+            createModel={createRedRockDeliBox}
+            modelPosition={[0, 240 / 2, 0]} // Position the box on the grid floor
+        >
             <GridHelperModel />
             <AxisLinesModel />
-            <BoxModel />
         </SceneContainer>
     );
 }

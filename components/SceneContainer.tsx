@@ -1,11 +1,30 @@
 // components/SceneContainer.tsx
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber/native';
-import { View, StyleSheet, PanResponder, Text, useWindowDimensions, LayoutChangeEvent, Platform } from 'react-native';
+import { View, StyleSheet, PanResponder, Text, useWindowDimensions, LayoutChangeEvent, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as THREE from 'three';
+// --- 1. NEW: Import useFocusEffect ---
+import { useFocusEffect } from 'expo-router';
 
-// This helper component will live inside the container and control the camera
+// Helper function to clean up 3D objects from memory
+function disposeModel(model: THREE.Object3D | null) {
+    if (!model) return;
+    model.traverse((child) => {
+        const mesh = child as THREE.Mesh;
+        if (mesh.isMesh) {
+            mesh.geometry.dispose();
+            if (Array.isArray(mesh.material)) {
+                mesh.material.forEach(material => material.dispose());
+            } else if (mesh.material) {
+                mesh.material.dispose();
+            }
+        }
+    });
+}
+
+// Camera Controller Component
 function CameraController({ angleRef, distanceRef }: { angleRef: React.MutableRefObject<number>, distanceRef: React.MutableRefObject<number> }) {
     useFrame(({ camera }) => {
         camera.position.x = Math.sin(angleRef.current) * distanceRef.current;
@@ -17,8 +36,36 @@ function CameraController({ angleRef, distanceRef }: { angleRef: React.MutableRe
 }
 
 // The main container component
-export default function SceneContainer({ children }: { children: React.ReactNode }) {
-    // All the hooks for UI and camera control now live here
+export default function SceneContainer({ createModel, modelPosition, children }: {
+    createModel?: () => THREE.Group;
+    modelPosition?: [number, number, number];
+    children?: React.ReactNode;
+}) {
+    const [model, setModel] = useState<THREE.Group | null>(null);
+
+    // --- 2. UPDATED: Swapped useEffect for useFocusEffect ---
+    useFocusEffect(
+        useCallback(() => {
+            let modelToDispose: THREE.Group | null = null;
+            if (createModel) {
+                // Use a timeout to allow the loading spinner to render first
+                const timerId = setTimeout(() => {
+                    const loadedModel = createModel();
+                    modelToDispose = loadedModel;
+                    setModel(loadedModel);
+                }, 16);
+
+                // The cleanup function now runs when the screen loses focus
+                return () => {
+                    clearTimeout(timerId);
+                    disposeModel(modelToDispose);
+                    setModel(null); // Reset state for next visit
+                };
+            }
+        }, [createModel])
+    );
+
+    // --- The rest of the component is unchanged ---
     const cameraAngle = useRef(0);
     const startAngle = useRef(0);
     const cameraDistance = useRef(2500);
@@ -85,12 +132,23 @@ export default function SceneContainer({ children }: { children: React.ReactNode
         })
     ).current;
 
+    const isLoading = createModel && !model;
+
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#ffffff" />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container} onLayout={onLayout}>
             <Canvas camera={{ fov: 50, far: 10000 }}>
                 <CameraController angleRef={cameraAngle} distanceRef={cameraDistance} />
                 <ambientLight intensity={0.8} />
                 <directionalLight position={[500, 1000, 750]} intensity={1.5} />
+                {model && <primitive object={model} position={modelPosition} />}
                 {children}
             </Canvas>
             <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers} />
@@ -112,6 +170,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#111111',
+    },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: '#111111',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     overlay: {
         position: 'absolute',

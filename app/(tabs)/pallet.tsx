@@ -5,12 +5,7 @@ import createLoscamPallet from '@/components/3d/LoscamPallet';
 import createAxisLines from '@/components/3d/AxisLines';
 import createGridHelper from '@/components/3d/GridHelper';
 
-function PalletModel() {
-    const model = useMemo(() => createLoscamPallet(), []);
-    // Position the pallet so it sits on top of the grid
-    return <primitive object={model} position={[0, 150 / 2, 0]} />;
-}
-
+// These helpers can stay as they are "accessories" to the main scene
 function AxisLinesModel() {
     const model = useMemo(() => createAxisLines(1000), []);
     return <primitive object={model} />;
@@ -23,10 +18,15 @@ function GridHelperModel() {
 
 export default function PalletScreen() {
     return (
-        <SceneContainer>
+        // Pass the model creation function and position as props.
+        // The container will handle loading, disposal, and positioning.
+        <SceneContainer
+            createModel={createLoscamPallet}
+            modelPosition={[0, 150 / 2, 0]}
+        >
+            {/* The grid and axes are passed as children */}
             <GridHelperModel />
             <AxisLinesModel />
-            <PalletModel />
         </SceneContainer>
     );
 }
