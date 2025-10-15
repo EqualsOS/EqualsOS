@@ -11,7 +11,7 @@ export default function HomeScreen() {
     // --- 2. Add the function to call the handler ---
     const handleSendNotification = async () => {
         await NotificationHandler.sendLocalNotification(
-          'Equals OS Notification',
+          'Equals OS',
           'Hello World! 👋'
         );
     };
