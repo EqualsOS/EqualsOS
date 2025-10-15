@@ -5,7 +5,6 @@ import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
     useEffect(() => {
