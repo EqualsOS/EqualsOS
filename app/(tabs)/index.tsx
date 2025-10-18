@@ -42,7 +42,7 @@ export default function LoginScreen() {
       <ThemedView style={styles.content}>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Equals OS</ThemedText>
-          <ThemedText>Build your own library of information!</ThemedText>
+          <ThemedText>Organize your world.</ThemedText>
         </ThemedView>
 
         <View style={styles.buttonContainer}>

@@ -14,20 +14,6 @@ export default function TabLayout() {
         borderTopColor: '#333',
       }
     }}>
-      <Tabs.Screen
-        name="platform" // This corresponds to 'app/platform.tsx'
-        options={{
-          title: 'Platform',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cube" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="bookshelf" // This corresponds to 'app/bookshelf.tsx'
-        options={{
-          title: 'Bookshelf',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="book" color={color} />,
-        }}
-      />
     </Tabs>
   );
 }

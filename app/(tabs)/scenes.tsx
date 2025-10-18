@@ -4,53 +4,49 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// --- 1. Import the new NotificationHandler ---
-import NotificationHandler from '@/utils/NotificationHandler';
 
 export default function HomeScreen() {
-    // --- 2. Add the function to call the handler ---
-    const handleSendNotification = async () => {
-        await NotificationHandler.sendLocalNotification(
-          'Equals OS',
-          'Hello World! 👋'
-        );
-    };
 
     return (
       <SafeAreaView style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContentContainer}>
               <ThemedView style={styles.titleContainer}>
-                  <ThemedText type="title">Home</ThemedText>
+                  <ThemedText type="title">Scenes</ThemedText>
               </ThemedView>
 
               <ThemedView style={styles.linkContainer}>
-                  <ThemedText>Welcome!</ThemedText>
-                  <Link href="/itemTypes" asChild>
+                  <ThemedText>Select a scene to view:</ThemedText>
+                  {/* Scene links are unchanged */}
+                  <Link href={"/scenes/platform"} asChild>
                       <Pressable style={styles.link}>
-                          <TabBarIcon name="folder-open-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Item Types</ThemedText>
+                          <TabBarIcon name="layers-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Platform</ThemedText>
                       </Pressable>
                   </Link>
-                  <Link href="/convos" asChild>
+                  <Link href={"/scenes/pallet"} asChild>
                       <Pressable style={styles.link}>
-                          <TabBarIcon name="chatbubbles-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Convos</ThemedText>
+                          <TabBarIcon name="grid-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Pallet</ThemedText>
                       </Pressable>
                   </Link>
-                  <Link href="/scenes" asChild>
+                  <Link href={"/scenes/box"} asChild>
                       <Pressable style={styles.link}>
-                          <TabBarIcon name="film-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Scenes</ThemedText>
+                          <TabBarIcon name="cube-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Box</ThemedText>
                       </Pressable>
                   </Link>
-              </ThemedView>
-
-              {/* --- 3. Add the new button --- */}
-              <ThemedView style={styles.actionContainer}>
-                  <Pressable style={styles.link} onPress={handleSendNotification}>
-                      <TabBarIcon name="notifications-outline" color="#fff" />
-                      <ThemedText style={styles.linkText}>Send Notification</ThemedText>
-                  </Pressable>
+                  <Link href={"/scenes/bookshelf"} asChild>
+                      <Pressable style={styles.link}>
+                          <TabBarIcon name="library-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Bookshelf</ThemedText>
+                      </Pressable>
+                  </Link>
+                  <Link href={"/scenes/explore"} asChild>
+                      <Pressable style={styles.link}>
+                          <TabBarIcon name="compass-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Explore</ThemedText>
+                      </Pressable>
+                  </Link>
               </ThemedView>
           </ScrollView>
       </SafeAreaView>

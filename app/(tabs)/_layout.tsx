@@ -30,16 +30,10 @@ export default function TabLayout() {
                 // We remove the global unmountOnBlur from here
             }}>
             <Tabs.Screen name="index" options={{ title: 'Account', tabBarLabel: 'Account', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />), }} />
-            <Tabs.Screen name="home" options={{ title: 'Home', tabBarLabel: 'Account', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />), }} />
-
-            {/* --- Simple scenes get unmountOnBlur --- */}
-            <Tabs.Screen name="platform" options={{ title: 'Platform', tabBarLabel: 'Platform', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'layers' : 'layers-outline'} color={color} />), }} />
-            <Tabs.Screen name="pallet" options={{ title: 'Pallet', tabBarLabel: 'Pallet', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'grid' : 'grid-outline'} color={color} />), }} />
-            <Tabs.Screen name="box" options={{ title: 'Box', tabBarLabel: 'Box', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'cube' : 'cube-outline'} color={color} />), }} />
-
-            {/* --- Heavy scenes DO NOT get unmountOnBlur --- */}
-            <Tabs.Screen name="bookshelf" options={{ title: 'Bookshelf', tabBarLabel: 'Bookshelf', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'library' : 'library-outline'} color={color} />), }} />
-            <Tabs.Screen name="explore" options={{ title: 'Explore', tabBarLabel: 'Explore', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'compass' : 'compass-outline'} color={color} />), }} />
+            <Tabs.Screen name="home" options={{ title: 'Home', tabBarLabel: 'Home', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />), }} />
+            <Tabs.Screen name="itemTypes" options={{ title: 'Item Types', tabBarLabel: 'Item Types', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'folder-open' : 'folder-open-outline'} color={color} />), }} />
+            <Tabs.Screen name="convos" options={{ title: 'Convos', tabBarLabel: 'Convos', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'chatbubbles' : 'chatbubbles-outline'} color={color} />), }} />
+            <Tabs.Screen name="scenes" options={{ title: 'Scenes', tabBarLabel: 'Scenes', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'film' : 'film-outline'} color={color} />), }} />
         </Tabs>
     );
 }
