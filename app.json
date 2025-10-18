@@ -50,6 +50,9 @@
       "reactCompiler": true
     },
     "extra": {
+      "googleSignIn": {
+        "androidClientId": "791815690935-sfosouk9ial6kdnt6htgmaothsth5uj1.apps.googleusercontent.com"
+      },
       "router": {},
       "eas": {
         "projectId": "e3e0b515-8545-459d-be13-a64a05911cbd"

@@ -29,7 +29,8 @@ export default function TabLayout() {
                 headerShown: false,
                 // We remove the global unmountOnBlur from here
             }}>
-            <Tabs.Screen name="index" options={{ title: 'Home', tabBarLabel: 'Home', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />), }} />
+            <Tabs.Screen name="index" options={{ title: 'Account', tabBarLabel: 'Account', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />), }} />
+            <Tabs.Screen name="home" options={{ title: 'Home', tabBarLabel: 'Account', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />), }} />
 
             {/* --- Simple scenes get unmountOnBlur --- */}
             <Tabs.Screen name="platform" options={{ title: 'Platform', tabBarLabel: 'Platform', tabBarIcon: ({ color, focused }) => (<TabBarIcon name={focused ? 'layers' : 'layers-outline'} color={color} />), }} />
