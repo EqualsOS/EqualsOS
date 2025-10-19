@@ -9,6 +9,9 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  DEFAULT_CONTAINER_BACKGROUND_COLOUR
+} from '@/constants/theme';
 
 // This is necessary for the auth session to work correctly
 WebBrowser.maybeCompleteAuthSession();
@@ -67,7 +70,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111111',
+    backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
   },
   content: {
     flex: 1,

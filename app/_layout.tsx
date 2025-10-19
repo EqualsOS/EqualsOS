@@ -10,7 +10,6 @@ export default function TabLayout() {
       headerShown: false, // Hides the title bar at the top
       tabBarActiveTintColor: 'white',
       tabBarStyle: {
-        //backgroundColor: '#1c1c1c',
         backgroundColor: '#1c1c1c',
         borderTopColor: '#333',
         display: 'none'

@@ -7,10 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // --- 1. Import the new NotificationHandler ---
 import NotificationHandler from '@/utils/NotificationHandler';
 import React
-    from "react";
+    from 'react';
 import {
     PageTitle
-} from "@/components/PageTitle";
+} from '@/components/PageTitle';
+import {
+    DEFAULT_CONTAINER_BACKGROUND_COLOUR
+} from '@/constants/theme';
 
 export default function HomeScreen() {
     // --- 2. Add the function to call the handler ---
@@ -63,7 +66,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#111111',
+        backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
     },
     scrollContentContainer: {
         padding: 32,

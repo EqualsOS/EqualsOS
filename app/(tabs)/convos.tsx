@@ -9,7 +9,10 @@ import { ThemedView } from '@/components/themed-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React
   from 'react';
-import { PageTitle } from '@/components/PageTitle'; // <-- Import new component
+import { PageTitle } from '@/components/PageTitle';
+import {
+  DEFAULT_CONTAINER_BACKGROUND_COLOUR
+} from '@/constants/theme'; // <-- Import new component
 
 export default function HomeScreen() {
 
@@ -29,7 +32,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111111',
+    backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
   },
   scrollContentContainer: {
     padding: 32,
