@@ -6,6 +6,11 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // --- 1. Import the new NotificationHandler ---
 import NotificationHandler from '@/utils/NotificationHandler';
+import React
+    from "react";
+import {
+    PageTitle
+} from "@/components/PageTitle";
 
 export default function HomeScreen() {
     // --- 2. Add the function to call the handler ---
@@ -19,9 +24,7 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-              <ThemedView style={styles.titleContainer}>
-                  <ThemedText type="title">Home</ThemedText>
-              </ThemedView>
+              <PageTitle iconName='home' title='Home' />
 
               <ThemedView style={styles.linkContainer}>
                   <ThemedText>Welcome!</ThemedText>

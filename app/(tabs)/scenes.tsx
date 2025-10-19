@@ -4,15 +4,18 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import React
+    from "react";
+import {
+    PageTitle
+} from "@/components/PageTitle";
 
 export default function HomeScreen() {
 
     return (
       <SafeAreaView style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-              <ThemedView style={styles.titleContainer}>
-                  <ThemedText type="title">Scenes</ThemedText>
-              </ThemedView>
+              <PageTitle iconName='film' title='Scenes' />
 
               <ThemedView style={styles.linkContainer}>
                   <ThemedText>Select a scene to view:</ThemedText>

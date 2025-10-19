@@ -4,42 +4,21 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import React
+  from "react";
+import {
+  PageTitle
+} from "@/components/PageTitle";
 
 export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Item Types</ThemedText>
-        </ThemedView>
+        <PageTitle iconName='folder-open' title='Item Types' />
 
         <ThemedView style={styles.linkContainer}>
-          <ThemedText>Select an Item Type to view:</ThemedText>
-          <Link href="/app/scenes/platform" asChild>
-            <Pressable style={styles.link}>
-              <TabBarIcon name="layers-outline" color="#fff" />
-              <ThemedText style={styles.linkText}>Platform</ThemedText>
-            </Pressable>
-          </Link>
-          <Link href="/app/scenes/pallet" asChild>
-            <Pressable style={styles.link}>
-              <TabBarIcon name="grid-outline" color="#fff" />
-              <ThemedText style={styles.linkText}>Pallet</ThemedText>
-            </Pressable>
-          </Link>
-          <Link href="/app/scenes/box" asChild>
-            <Pressable style={styles.link}>
-              <TabBarIcon name="cube-outline" color="#fff" />
-              <ThemedText style={styles.linkText}>Box</ThemedText>
-            </Pressable>
-          </Link>
-          <Link href="/app/scenes/bookshelf" asChild>
-            <Pressable style={styles.link}>
-              <TabBarIcon name="library-outline" color="#fff" />
-              <ThemedText style={styles.linkText}>Bookshelf</ThemedText>
-            </Pressable>
-          </Link>
+          <ThemedText>Not finished yet!</ThemedText>
         </ThemedView>
       </ScrollView>
     </SafeAreaView>
