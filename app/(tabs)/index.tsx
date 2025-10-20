@@ -12,6 +12,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   DEFAULT_CONTAINER_BACKGROUND_COLOUR
 } from '@/constants/theme';
+import {
+  PageTitle
+} from '@/components/PageTitle';
 
 // This is necessary for the auth session to work correctly
 WebBrowser.maybeCompleteAuthSession();
@@ -20,6 +23,7 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: "791815690935-4k0cj8tkthu9drbdgn650plabqsttrb7.apps.googleusercontent.com",
     androidClientId: "791815690935-sfosouk9ial6kdnt6htgmaothsth5uj1.apps.googleusercontent.com",
     // Remember to add your other client IDs for iOS, web, etc.
   });
@@ -44,7 +48,7 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.container}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Equals OS</ThemedText>
+          <PageTitle iconName='brand' title='Equals OS' />
           <ThemedText>Organize your world.</ThemedText>
         </ThemedView>
 
