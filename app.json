@@ -43,7 +43,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -51,7 +52,10 @@
     },
     "extra": {
       "googleSignIn": {
-        "androidClientId": "791815690935-sfosouk9ial6kdnt6htgmaothsth5uj1.apps.googleusercontent.com"
+        "devAndroidClientId": "96164279919-rd9mn4bfo6t5p9tbe9roqns96f083u9f.apps.googleusercontent.com",
+        "devWebClientId": "96164279919-cq329gfc21bv997oqkg8beb1a41hghlg.apps.googleusercontent.com",
+        "prodAndroidClientId": "791815690935-4496kvtrpbgrfkan9qalq4vvn1v4t0uc.apps.googleusercontent.com",
+        "prodWebClientId": "791815690935-73sf30pb7moggo1r4sr7esdc4o5orf4j.apps.googleusercontent.com"
       },
       "router": {},
       "eas": {

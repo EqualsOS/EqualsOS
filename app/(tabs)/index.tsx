@@ -1,6 +1,9 @@
 // app/index.tsx
 
-import React, { useEffect } from 'react';
+import React, {
+  useEffect,
+  useState
+} from 'react';
 import {
   StyleSheet,
   Pressable,
@@ -22,29 +25,70 @@ import {
 import {
   ScrollableView
 } from '@/components/ScrollableView';
+// --- 1. Import SecureStore ---
+import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 
 // This is necessary for the auth session to work correctly
 WebBrowser.maybeCompleteAuthSession();
+const getCredentials = ()=>{
+  if (__DEV__) {
+    return {
+      webClientId: Constants.expoConfig?.extra?.googleSignIn?.devWebClientId,
+      androidClientId: Constants.expoConfig?.extra?.googleSignIn?.devAndroidClientId
+      // Remember to add your other client IDs for iOS, web, etc.
+    };
+  }
+  return {
+    webClientId: Constants.expoConfig?.extra?.googleSignIn?.prodWebClientId,
+    androidClientId: Constants.expoConfig?.extra?.googleSignIn?.prodAndroidClientId
+    // Remember to add your other client IDs for iOS, web, etc.
+  };
+};
 
 export default function LoginScreen() {
   const router = useRouter();
+  // --- 2. Add state to hold user info ---
+  const [userInfo, setUserInfo] = useState<any>(null); // Use a more specific type if known
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: "791815690935-4k0cj8tkthu9drbdgn650plabqsttrb7.apps.googleusercontent.com",
-    androidClientId: "791815690935-sfosouk9ial6kdnt6htgmaothsth5uj1.apps.googleusercontent.com",
-    // Remember to add your other client IDs for iOS, web, etc.
-  });
+  const [request, response, promptAsync] = Google.useAuthRequest(getCredentials());
 
   useEffect(() => {
+    // --- 3. Updated logic for successful response ---
     if (response?.type === 'success') {
       const { authentication } = response;
-      console.log('Authentication successful!', authentication);
-      // On success, replace the current screen with the main tab layout
-      router.replace('/home');
+      if (authentication) {
+        console.log('Authentication successful:', authentication);
+
+        // Securely store tokens (example: store refresh token)
+        if (authentication.refreshToken) {
+          SecureStore.setItemAsync('googleRefreshToken', authentication.refreshToken);
+        }
+
+        // Fetch user info using the access token
+        fetchUserInfo(authentication.accessToken);
+
+        // Navigate to home screen after successful login and fetching info
+        router.replace('/home');
+      }
     } else if (response?.type === 'error') {
       console.error('Authentication error:', response.error);
     }
-  }, [response]);
+  }, [response, router]);
+
+  // --- 4. Function to fetch user info ---
+  const fetchUserInfo = async (token: string) => {
+    try {
+      const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const user = await response.json();
+      console.log('User Info:', user);
+      setUserInfo(user); // Store user info in state
+    } catch (error) {
+      console.error('Failed to fetch user info:', error);
+    }
+  };
 
   const handleContinue = () => {
     // Replace the current screen with the main tab layout
