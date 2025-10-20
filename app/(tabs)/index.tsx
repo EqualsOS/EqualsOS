@@ -4,8 +4,7 @@ import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Pressable,
-  View,
-  ScrollView
+  View
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
@@ -20,6 +19,9 @@ import {
 import {
   PageTitle
 } from '@/components/PageTitle';
+import {
+  ScrollableView
+} from '@/components/ScrollableView';
 
 // This is necessary for the auth session to work correctly
 WebBrowser.maybeCompleteAuthSession();
@@ -52,29 +54,27 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-        <ThemedView style={[styles.content, styles.outerThemedView]}>
-          <ThemedView style={[styles.titleContainer]}>
-            <PageTitle iconName='brand' title={brandName} />
-            <ThemedText style={styles.subtitleText}>Organize your world.</ThemedText>
-          </ThemedView>
-
-          <View style={styles.buttonContainer}>
-            <Pressable
-              style={styles.button}
-              disabled={!request}
-              onPress={() => promptAsync()}
-            >
-              <TabBarIcon name="logo-google" color="#fff" />
-              <ThemedText style={styles.buttonText}>Sign in with Google</ThemedText>
-            </Pressable>
-
-            <Pressable style={styles.button} onPress={handleContinue}>
-              <ThemedText style={styles.buttonText}>Continue without signing in</ThemedText>
-            </Pressable>
-          </View>
+      <ScrollableView style={[styles.content, styles.outerThemedView]}>
+        <ThemedView style={[styles.titleContainer]}>
+          <PageTitle iconName='brand' title={brandName} />
+          <ThemedText style={styles.subtitleText}>Organize your world.</ThemedText>
         </ThemedView>
-      </ScrollView>
+
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={styles.button}
+            disabled={!request}
+            onPress={() => promptAsync()}
+          >
+            <TabBarIcon name="logo-google" color="#fff" />
+            <ThemedText style={styles.buttonText}>Sign in with Google</ThemedText>
+          </Pressable>
+
+          <Pressable style={styles.button} onPress={handleContinue}>
+            <ThemedText style={styles.buttonText}>Continue without signing in</ThemedText>
+          </Pressable>
+        </View>
+      </ScrollableView>
     </SafeAreaView>
   );
 }
