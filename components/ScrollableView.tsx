@@ -26,8 +26,8 @@ export function ScrollableView({ children, style, ...otherProps }: ScrollableVie
 
 const styles = StyleSheet.create({
   scrollContentContainer: {
-    //minHeight: '100%', // TODO: Need to figure out how to reset this when the viewport size changes.
     padding: 0,
+    flexGrow: 1
   },
   scrollableThemedView: {
     flex: 1,
