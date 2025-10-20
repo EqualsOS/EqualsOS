@@ -1,8 +1,6 @@
-import { StyleSheet, Pressable, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React
   from 'react';
@@ -11,19 +9,22 @@ import {
 } from '@/components/PageTitle';
 import {
   DEFAULT_CONTAINER_BACKGROUND_COLOUR
-} from '@/constants/theme'; // <-- Import new component
+} from '@/constants/theme';
+import {
+  ScrollableView
+} from '@/components/ScrollableView';
 
 export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+      <ScrollableView style={styles.scrollableThemedView}>
         <PageTitle iconName='folder-open' title='Item Types' />
 
         <ThemedView style={styles.linkContainer}>
           <ThemedText>Not finished yet!</ThemedText>
         </ThemedView>
-      </ScrollView>
+      </ScrollableView>
     </SafeAreaView>
   );
 }
@@ -33,9 +34,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
   },
-  scrollContentContainer: {
-    padding: 32,
-    gap: 16,
+  scrollableThemedView: {
+    padding: 32
   },
   titleContainer: {
     marginBottom: 8,

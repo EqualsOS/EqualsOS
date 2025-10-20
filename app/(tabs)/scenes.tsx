@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -12,12 +12,15 @@ import {
 import {
     DEFAULT_CONTAINER_BACKGROUND_COLOUR
 } from '@/constants/theme';
+import {
+    ScrollableView
+} from '@/components/ScrollableView';
 
 export default function HomeScreen() {
 
     return (
       <SafeAreaView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+          <ScrollableView style={styles.scrollableThemedView}>
               <PageTitle iconName='film' title='Scenes' />
 
               <ThemedView style={styles.linkContainer}>
@@ -54,7 +57,7 @@ export default function HomeScreen() {
                       </Pressable>
                   </Link>
               </ThemedView>
-          </ScrollView>
+          </ScrollableView>
       </SafeAreaView>
     );
 }
@@ -64,9 +67,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
     },
-    scrollContentContainer: {
-        padding: 32,
-        gap: 16,
+    scrollableThemedView: {
+        padding: 32
     },
     titleContainer: {
         marginBottom: 8,

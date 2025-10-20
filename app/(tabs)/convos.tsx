@@ -1,8 +1,7 @@
 // HomeScreen.tsx (or your screen file)
 // (Updated File)
 
-import { StyleSheet, Pressable, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 // TabBarIcon is no longer needed here
@@ -12,19 +11,22 @@ import React
 import { PageTitle } from '@/components/PageTitle';
 import {
   DEFAULT_CONTAINER_BACKGROUND_COLOUR
-} from '@/constants/theme'; // <-- Import new component
+} from '@/constants/theme';
+import {
+  ScrollableView
+} from '@/components/ScrollableView';
 
 export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+      <ScrollableView style={styles.scrollableThemedView}>
         <PageTitle iconName='chatbubbles' title='Convos' />
 
         <ThemedView style={styles.linkContainer}>
           <ThemedText>Not finished yet!</ThemedText>
         </ThemedView>
-      </ScrollView>
+      </ScrollableView>
     </SafeAreaView>
   );
 }
@@ -34,9 +36,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
   },
-  scrollContentContainer: {
-    padding: 32,
-    gap: 16,
+  scrollableThemedView: {
+    padding: 32
   },
   // titleContainer is now in the PageTitle component
   linkContainer: {
