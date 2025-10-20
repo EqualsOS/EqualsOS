@@ -50,12 +50,14 @@ export default function LoginScreen() {
     // Replace the current screen with the main tab layout
     router.replace('/home');
   };
-  const brandName = `Equals OS`;
+  let suffix = '';
+  //suffix = 'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww1'
+  const brandName = `Equals OS${suffix}`;
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollableView style={[styles.content, styles.outerThemedView]}>
-        <ThemedView style={[styles.titleContainer]}>
+      <ScrollableView style={styles.content}>
+        <ThemedView style={styles.titleContainer}>
           <PageTitle iconName='brand' title={brandName} />
           <ThemedText style={styles.subtitleText}>Organize your world.</ThemedText>
         </ThemedView>
@@ -85,26 +87,12 @@ const styles = StyleSheet.create({
     backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
     justifyContent: 'center'
   },
-  scrollContentContainer: {
-    minHeight: '100%',
-    //flex: 1,
-    //gap: 0,
-    padding: 0
-  },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
     gap: 48,
-  },
-  outerThemedView: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    //padding: 32,
-    gap: 0,
   },
   titleContainer: {
     justifyContent: 'center',

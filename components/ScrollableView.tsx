@@ -11,8 +11,13 @@ interface ScrollableViewProps extends ThemedViewProps {
 
 export function ScrollableView({ children, style, ...otherProps }: ScrollableViewProps) {
   return (
-    <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-      <ThemedView style={style} {...otherProps}>
+    <ScrollView contentContainerStyle={[
+      styles.scrollContentContainer
+    ]}>
+      <ThemedView style={[
+        style,
+        styles.scrollableThemedView
+      ]} {...otherProps}>
         {children}
       </ThemedView>
     </ScrollView>
@@ -20,29 +25,11 @@ export function ScrollableView({ children, style, ...otherProps }: ScrollableVie
 }
 
 const styles = StyleSheet.create({
-  /*scrollContentContainer: {
-    minHeight: '100%', // Ensure content can be centered if it's short
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
-    padding: 32,
-    gap: 48,
-  },
-  outerContainer: {
-    flex: 1,
-    justifyContent: 'center', // Vertically center the scroll content
-  },*/
   scrollContentContainer: {
     minHeight: '100%',
-    //flex: 1,
-    //gap: 0,
     padding: 0
   },
-  outerThemedView: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    //padding: 32,
-    gap: 0,
+  scrollableThemedView: {
+    flex: 1
   },
 });

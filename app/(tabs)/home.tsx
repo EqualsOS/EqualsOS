@@ -14,6 +14,9 @@ import {
 import {
     DEFAULT_CONTAINER_BACKGROUND_COLOUR
 } from '@/constants/theme';
+import {
+    ScrollableView
+} from '@/components/ScrollableView';
 
 export default function HomeScreen() {
     // --- 2. Add the function to call the handler ---
@@ -26,39 +29,41 @@ export default function HomeScreen() {
 
     return (
       <SafeAreaView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-              <PageTitle iconName='home' title='Home' />
+          <ScrollableView>
+              <ThemedView style={styles.outerThemedView}>
+                  <PageTitle iconName='home' title='Home' />
 
-              <ThemedView style={styles.linkContainer}>
-                  <ThemedText>Welcome!</ThemedText>
-                  <Link href="/itemTypes" asChild>
-                      <Pressable style={styles.link}>
-                          <TabBarIcon name="folder-open-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Item Types</ThemedText>
-                      </Pressable>
-                  </Link>
-                  <Link href="/convos" asChild>
-                      <Pressable style={styles.link}>
-                          <TabBarIcon name="chatbubbles-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Convos</ThemedText>
-                      </Pressable>
-                  </Link>
-                  <Link href="/scenes" asChild>
-                      <Pressable style={styles.link}>
-                          <TabBarIcon name="film-outline" color="#fff" />
-                          <ThemedText style={styles.linkText}>Scenes</ThemedText>
-                      </Pressable>
-                  </Link>
-              </ThemedView>
+                  <ThemedView style={styles.linkContainer}>
+                      <ThemedText>Welcome!</ThemedText>
+                      <Link href="/itemTypes" asChild>
+                          <Pressable style={styles.link}>
+                              <TabBarIcon name="folder-open-outline" color="#fff" />
+                              <ThemedText style={styles.linkText}>Item Types</ThemedText>
+                          </Pressable>
+                      </Link>
+                      <Link href="/convos" asChild>
+                          <Pressable style={styles.link}>
+                              <TabBarIcon name="chatbubbles-outline" color="#fff" />
+                              <ThemedText style={styles.linkText}>Convos</ThemedText>
+                          </Pressable>
+                      </Link>
+                      <Link href="/scenes" asChild>
+                          <Pressable style={styles.link}>
+                              <TabBarIcon name="film-outline" color="#fff" />
+                              <ThemedText style={styles.linkText}>Scenes</ThemedText>
+                          </Pressable>
+                      </Link>
+                  </ThemedView>
 
-              {/* --- 3. Add the new button --- */}
-              <ThemedView style={styles.actionContainer}>
-                  <Pressable style={styles.link} onPress={handleSendNotification}>
-                      <TabBarIcon name="notifications-outline" color="#fff" />
-                      <ThemedText style={styles.linkText}>Send Notification</ThemedText>
-                  </Pressable>
+                  {/* --- 3. Add the new button --- */}
+                  <ThemedView style={styles.actionContainer}>
+                      <Pressable style={styles.link} onPress={handleSendNotification}>
+                          <TabBarIcon name="notifications-outline" color="#fff" />
+                          <ThemedText style={styles.linkText}>Send Notification</ThemedText>
+                      </Pressable>
+                  </ThemedView>
               </ThemedView>
-          </ScrollView>
+          </ScrollableView>
       </SafeAreaView>
     );
 }
@@ -68,9 +73,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
     },
-    scrollContentContainer: {
-        padding: 32,
-        gap: 16,
+    outerThemedView: {
+        padding: 32
     },
     titleContainer: {
         marginBottom: 8,
