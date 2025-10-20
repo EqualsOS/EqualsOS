@@ -11,6 +11,8 @@ const tintColorDark = '#fff';
 export const DEFAULT_CONTAINER_BACKGROUND_COLOUR = '#111111';
 export const DEFAULT_BACKGROUND_COLOUR = '#203a43';
 export const DARK_BACKGROUND_COLOUR = '#140924';
+export const FONT_FAMILY_GORDITA_LIGHT = 'Gordita-Light';
+export const FONT_FAMILY_GORDITA_BOLD = 'Gordita-Light';
 
 export const Colors = {
   light: {
@@ -36,6 +38,10 @@ export const Colors = {
 
 export const Fonts = Platform.select({
   ios: {
+    // 2025-10-20 Added the Gordita font family.
+    regular: FONT_FAMILY_GORDITA_LIGHT,
+    bold: FONT_FAMILY_GORDITA_BOLD,
+
     /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
     /** iOS `UIFontDescriptorSystemDesignSerif` */
@@ -46,12 +52,20 @@ export const Fonts = Platform.select({
     mono: 'ui-monospace',
   },
   default: {
+    // 2025-10-20 Added the Gordita font family.
+    regular: FONT_FAMILY_GORDITA_LIGHT,
+    bold: FONT_FAMILY_GORDITA_BOLD,
+
     sans: 'normal',
     serif: 'serif',
     rounded: 'normal',
     mono: 'monospace',
   },
   web: {
+    // 2025-10-20 Added the Gordita font family.
+    regular: FONT_FAMILY_GORDITA_LIGHT,
+    bold: FONT_FAMILY_GORDITA_BOLD,
+
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
     rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",

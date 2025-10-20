@@ -25,5 +25,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 45, // Default width
     height: 45, // Default height
+    //transform: 'translateY(-7.5%)'
   },
 });

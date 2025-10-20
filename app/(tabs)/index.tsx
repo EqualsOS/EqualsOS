@@ -1,7 +1,12 @@
 // app/index.tsx
 
 import React, { useEffect } from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import {
+  StyleSheet,
+  Pressable,
+  View,
+  ScrollView
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -43,30 +48,33 @@ export default function LoginScreen() {
     // Replace the current screen with the main tab layout
     router.replace('/home');
   };
+  const brandName = `Equals OS`;
 
   return (
     <SafeAreaView style={styles.container}>
-      <ThemedView style={styles.content}>
-        <ThemedView style={styles.titleContainer}>
-          <PageTitle iconName='brand' title='Equals OS' />
-          <ThemedText>Organize your world.</ThemedText>
+      <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+        <ThemedView style={[styles.content, styles.outerThemedView]}>
+          <ThemedView style={[styles.titleContainer]}>
+            <PageTitle iconName='brand' title={brandName} />
+            <ThemedText style={styles.subtitleText}>Organize your world.</ThemedText>
+          </ThemedView>
+
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={styles.button}
+              disabled={!request}
+              onPress={() => promptAsync()}
+            >
+              <TabBarIcon name="logo-google" color="#fff" />
+              <ThemedText style={styles.buttonText}>Sign in with Google</ThemedText>
+            </Pressable>
+
+            <Pressable style={styles.button} onPress={handleContinue}>
+              <ThemedText style={styles.buttonText}>Continue without signing in</ThemedText>
+            </Pressable>
+          </View>
         </ThemedView>
-
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.button}
-            disabled={!request}
-            onPress={() => promptAsync()}
-          >
-            <TabBarIcon name="logo-google" color="#fff" />
-            <ThemedText style={styles.buttonText}>Sign in with Google</ThemedText>
-          </Pressable>
-
-          <Pressable style={styles.button} onPress={handleContinue}>
-            <ThemedText style={styles.buttonText}>Continue without signing in</ThemedText>
-          </Pressable>
-        </View>
-      </ThemedView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -75,19 +83,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: DEFAULT_CONTAINER_BACKGROUND_COLOUR,
+    justifyContent: 'center'
+  },
+  scrollContentContainer: {
+    minHeight: '100%',
+    //flex: 1,
+    //gap: 0,
+    padding: 0
   },
   content: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     padding: 32,
     gap: 48,
   },
-  titleContainer: {
+  outerThemedView: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    //padding: 32,
+    gap: 0,
+  },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 0,
+    gap: 0,
+  },
+  subtitleText: {
+    paddingVertical: 10,
   },
   buttonContainer: {
     gap: 16,
+    marginTop: 25
   },
   button: {
     flexDirection: 'row',
@@ -101,7 +132,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
   },
 });

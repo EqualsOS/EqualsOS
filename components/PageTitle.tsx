@@ -20,7 +20,9 @@ export function PageTitle({ title, iconName }: PageTitleProps) {
       {/* --- 2. Conditionally render the icon or logo --- */}
       {iconName === 'brand' ? (
         // If iconName is 'brand', show the LogoImage
-        <LogoImage style={styles.iconStyle} />
+        <LogoImage
+          style={styles.logoStyle}
+        />
       ) : iconName ? (
         // Otherwise, if an iconName is provided, show the TabBarIcon
         <TabBarIcon
@@ -29,21 +31,28 @@ export function PageTitle({ title, iconName }: PageTitleProps) {
           style={styles.iconStyle}
         />
       ) : null /* Optionally render nothing if no iconName */}
-      <ThemedText type='title'>{title}</ThemedText>
+      <ThemedText type='title' style={styles.textStyle}>{title}</ThemedText>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    marginBottom: 8,
+    //marginBottom: 8,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12, // Use gap for consistent spacing
+    alignItems: 'flex-start',
+    gap: 10, // Use gap for consistent spacing
   },
-  // --- 3. Style for both icon and logo ---
+  textStyle: {
+    //paddingBottom: 10,
+  },
+  // --- 1. Style for icon. ---
   iconStyle: {
-    // You might adjust margin/padding here if needed now that gap is used
-    marginBottom: 2 // Keeps the vertical nudge
+    marginRight: 6,
+    transform: 'translateY(6%), scale(1.15)'
+  },
+  // --- 2. Style for logo. ---
+  logoStyle: {
+    transform: 'translate(-1%, -3%)',
   }
 });

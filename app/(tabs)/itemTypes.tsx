@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
   },
 });
